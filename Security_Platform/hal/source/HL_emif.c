@@ -268,19 +268,19 @@ void emif_SDRAM_StartupInit(void)
 	/* Procedure B Step 1:  EMIF Clock Frequency is assumed to be configured in the startup */
 
 	/* Procedure B  Step 2:  Program SDTIMR and SDSRETR to satisfy requirements of SDRAM Device */
-	emifREG->SDTIMR  = (uint32)((uint32)0U << 27U)|
-					   (uint32)((uint32)0U << 24U)|
+	emifREG->SDTIMR  = (uint32)((uint32)4U << 27U)|
+					   (uint32)((uint32)1U << 24U)|
 					   (uint32)((uint32)0U << 23U)|
-					   (uint32)((uint32)0U << 20U)|
+					   (uint32)((uint32)1U << 20U)|
 					   (uint32)((uint32)0U << 19U)|
-					   (uint32)((uint32)0U << 16U)|
-					   (uint32)((uint32)0U << 12U)|
-					   (uint32)((uint32)0U << 8U)|
+					   (uint32)((uint32)1U << 16U)|
+					   (uint32)((uint32)3U << 12U)|
+					   (uint32)((uint32)4U << 8U)|
 					   (uint32)((uint32)0U << 7U)|
-					   (uint32)((uint32)0U << 4U)|
+					   (uint32)((uint32)1U << 4U)|
 					   (uint32)((uint32)0U << 3U);
 
-	emifREG->SDSRETR = (uint32)0U;
+	emifREG->SDSRETR = (uint32)5U;
 
 	/* Procedure B  Step 3:  Program the RR Field of SDRCR to provide 200us of initialization time */
 	emifREG->SDRCR   = 1605U;
@@ -295,9 +295,9 @@ void emif_SDRAM_StartupInit(void)
 	*/
 	emifREG->SDCR   = (uint32)((uint32)0U << 31U)|
 					  (uint32)((uint32)1U << 14U)|
-					  (uint32)((uint32)0U << 9U)|
+					  (uint32)((uint32)2U << 9U)|
 					  (uint32)((uint32)1U << 8U)|
-					  (uint32)((uint32)0U << 4U)|
+					  (uint32)((uint32)2U << 4U)|
 					  (uint32)((uint32)elements_256);
 
 	/* Procedure B  Step 5:  Read of SDRAM memory location causes processor to wait until SDRAM Initialization completes */
@@ -306,7 +306,7 @@ void emif_SDRAM_StartupInit(void)
 	buffer           = buffer;
 
 	/* Procedure B  Step 6:  Program the RR field to the default Refresh Interval of the SDRAM*/
-	emifREG->SDRCR   = 0U;
+	emifREG->SDRCR   = 1171U;
 
 	/* Place the EMIF in Self Refresh Mode For Clock Change          */
 	/* Must only write to the upper byte of the SDCR to avoid        */

@@ -278,8 +278,7 @@
         <NAME>HL_lin.h</NAME>
       </HDRLIN>
       <SRCLIN>
-        <NAME>HL_lin.c</NAME>
-      </SRCLIN>
+        </SRCLIN>
       <HDRMIBSPI_R>
         <NAME>HL_reg_mibspi.h</NAME>
       </HDRMIBSPI_R>
@@ -586,7 +585,7 @@
         <PATH>include\HL_lin.h</PATH>
       </HDRLIN>
       <SRCLIN>
-        <PATH>source\HL_lin.c</PATH>
+        <PATH></PATH>
       </SRCLIN>
     </FILENAMES>
   </LIN>
