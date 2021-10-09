@@ -14,6 +14,7 @@
 #include"sci.h"
 #include"IIC.h"
 #include"FlexRay.h"
+#include"EMIF.h"
 
 void user_mian(void);
 #endif /* COMMUNICATION_USER_MAIN_H_ */
