@@ -13,6 +13,7 @@
 #include"can.h"
 #include"sci.h"
 #include"IIC.h"
+#include"FlexRay.h"
 
 void user_mian(void);
 #endif /* COMMUNICATION_USER_MAIN_H_ */
