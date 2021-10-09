@@ -10,6 +10,7 @@
 
 
 #include"spi.h"
+#include"can.h"
 
 void user_mian(void);
 #endif /* COMMUNICATION_USER_MAIN_H_ */
