@@ -84,36 +84,36 @@ void Internal_FLASH_write(uint32 addr, uint8* buff, uint8 len)
     uint8 remainder=0;
     uint8 total=0;
     uint8 i=0;
-        Fapi_StatusType oReturnCheck = Fapi_Status_Success;
-        oReturnCheck = Fapi_initializeFlashBanks(150);
-        if((oReturnCheck == Fapi_Status_Success) && (FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY != Fapi_Status_FsmBusy))
-        {
+    Fapi_StatusType oReturnCheck = Fapi_Status_Success;
+    oReturnCheck = Fapi_initializeFlashBanks(150);
+    if((oReturnCheck == Fapi_Status_Success) && (FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY != Fapi_Status_FsmBusy))
+    {
 
-            if((addr <= 0x003FFFFF) )
-            {
-                if(addr <= 0x003FFFFF)
-                oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank0);
-                else
-                    oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank1);
-                oReturnCheck = Fapi_enableMainBankSectors(0xffff);
-            }
-            else if( (addr >= 0xF0200000 ) && (addr<= 0xF021FFFF))
-            {
-                oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank7);
-                oReturnCheck = Fapi_enableEepromBankSectors(0xffffffff ,0xffffffff);
-            }
-            multiple=len/8;
-            remainder=len%8;
-            total=multiple+(remainder>0? 1:0);
-            for(i=0;i<total;i++)
-            {
-                while(FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY == Fapi_Status_FsmBusy);
-                oReturnCheck = Fapi_issueProgrammingCommand((uint32_t*)(addr+8*(i)), (buff+8*(i)), 8, 0, 0, Fapi_AutoEccGeneration);
-            }
-            /* Place specific example code here */
-            /* Wait for FSM to finish */
-            while(FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY == Fapi_Status_FsmBusy);
+        if((addr <= 0x003FFFFF) )
+        {
+            if(addr <= 0x003FFFFF)
+            oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank0);
+            else
+                oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank1);
+            oReturnCheck = Fapi_enableMainBankSectors(0xffff);
         }
+        else if( (addr >= 0xF0200000 ) && (addr<= 0xF021FFFF))
+        {
+            oReturnCheck = Fapi_setActiveFlashBank(Fapi_FlashBank7);
+            oReturnCheck = Fapi_enableEepromBankSectors(0xffffffff ,0xffffffff);
+        }
+        multiple=len/8;
+        remainder=len%8;
+        total=multiple+(remainder>0? 1:0);
+        for(i=0;i<total;i++)
+        {
+            while(FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY == Fapi_Status_FsmBusy);
+            oReturnCheck = Fapi_issueProgrammingCommand((uint32_t*)(addr+8*(i)), (buff+8*(i)), 8, 0, 0, Fapi_AutoEccGeneration);
+        }
+        /* Place specific example code here */
+        /* Wait for FSM to finish */
+        while(FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY == Fapi_Status_FsmBusy);
+    }
 }
 
 void Internal_FLASH_read(uint32 addr, uint8* buff, uint8 len)
