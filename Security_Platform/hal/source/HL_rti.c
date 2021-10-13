@@ -768,6 +768,32 @@ void rtiGetConfigValue(rti_config_reg_t *config_reg, config_value_type_t type)
 	}
 }
 
+/* USER CODE BEGIN (42) */
+/* USER CODE END */
+
+/** @fn void rtiCompare0Interrupt(void)
+*   @brief RTI1 Compare 0 Interrupt Handler
+*
+*   RTI1 Compare 0 interrupt handler 
+*
+*/
+#pragma CODE_STATE(rtiCompare0Interrupt, 32)
+#pragma INTERRUPT(rtiCompare0Interrupt, IRQ)
+
+/* SourceId : RTI_SourceId_022 */
+/* DesignId : RTI_DesignId_022 */
+/* Requirements : HL_CONQ_RTI_SR12 */
+void rtiCompare0Interrupt(void)
+{
+/* USER CODE BEGIN (43) */
+/* USER CODE END */
+
+    rtiREG1->INTFLAG = 1U;
+    rtiNotification(rtiREG1,rtiNOTIFICATION_COMPARE0);
+
+/* USER CODE BEGIN (44) */
+/* USER CODE END */
+}
 
 
 

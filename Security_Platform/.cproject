@@ -43,6 +43,17 @@
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_20.2.compilerID.DIAG_WRAP.853117177" name="Wrap diagnostic messages (--diag_wrap)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_20.2.compilerID.DIAG_WRAP" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_20.2.compilerID.DIAG_WRAP.off" valueType="enumerated"/>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.ti.ccstudio.buildDefinitions.TMS470_20.2.compilerID.INCLUDE_PATH.1607248992" name="Add dir to #include search path (--include_path, -I)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_20.2.compilerID.INCLUDE_PATH" valueType="includePath">
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip-1.4.1/src/include}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip-1.4.1/src/include/ipv4}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip-1.4.1/src/include/netif}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip_app/lwip_comm}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip_app/tcp_client_demo}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip_app/tcp_server_demo}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip_app/udp_demo}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/arch}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip_app}"/>
+									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/LWIP/lwip-1.4.1}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/FLASH_LIB}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/FLASH_LIB/source}"/>
 									<listOptionValue builtIn="false" value="${workspace_loc:/${ProjName}/FLASH_LIB/include}"/>

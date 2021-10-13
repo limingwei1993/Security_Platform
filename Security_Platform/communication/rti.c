@@ -7,7 +7,7 @@
 
 #include"rti.h"
 #include"HL_rti.h"
-
+extern uint32_t lwip_localtime;
 void WatchDog_init(void)
 {
     dwwdInit(rtiREG1, Generate_Reset , 4095, Size_100_Percent);
@@ -25,4 +25,13 @@ void CPU_reboot()
 }
 
 
-
+void rtiNotification(rtiBASE_t *rtiREG, uint32 notification)
+{
+  if(rtiREG==rtiREG1)
+  {
+      if(notification==rtiNOTIFICATION_COMPARE0)   /*1ms*/
+      {
+          lwip_localtime++;
+      }
+  }
+}

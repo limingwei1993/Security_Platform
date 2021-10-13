@@ -85,10 +85,12 @@ void GPO_set(GIO_Info output_ch, IO_STATE target)
 {
     if(output_ch.port==GPIOA &&(  output_ch.pin<=7) )
     {
+         gioPORTA->DOUT &= ~(1>> output_ch.pin);
          gioPORTA->DOUT |= (target>> output_ch.pin);
     }
     else if(output_ch.port==GPIOB &&( output_ch.pin<=7) )
     {
+         gioPORTB->DOUT &= ~(1>> output_ch.pin);
          gioPORTB->DOUT |= (target>> output_ch.pin);
     }
 }
