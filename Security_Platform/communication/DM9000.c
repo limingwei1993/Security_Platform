@@ -8,7 +8,7 @@
 
 
 #include "lwip/pbuf.h"
-#include "lwip_comm.h"
+#include "DM9000.h"
 struct dm9000_config dm9000cfg;
 void delay_ms(uint32 num)
 {

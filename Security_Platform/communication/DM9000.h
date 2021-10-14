@@ -157,6 +157,6 @@ void DM9000_Reset(void);
 void DM9000_SendPacket(struct pbuf *p);
 struct pbuf *DM9000_Receive_Packet(void);
 void DMA9000_ISRHandler(void);
-
+void delay_ms(uint32 num);
 
 #endif /* COMMUNICATION_DM9000_H_ */

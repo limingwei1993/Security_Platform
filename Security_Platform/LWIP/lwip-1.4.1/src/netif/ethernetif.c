@@ -1,6 +1,6 @@
 #include "netif/ethernetif.h" 
-#include "dm9000.h"  
-#include "lwip_comm.h" 
+#include "dm9000.h"
+#include "ETH.h"
 #include "netif/etharp.h"  
 #include "string.h"  
 //////////////////////////////////////////////////////////////////////////////////	 
