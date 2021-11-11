@@ -36,9 +36,9 @@
  *
  */
 
-#include "lwip/opt.h"
-#include "lwip/ip_addr.h"
-#include "lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_addr.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
 
 /* used by IP_ADDR_ANY and IP_ADDR_BROADCAST in ip_addr.h */
 const ip_addr_t ip_addr_any = { IPADDR_ANY };

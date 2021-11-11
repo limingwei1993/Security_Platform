@@ -46,21 +46,21 @@
 /* @todo Check the use of '(struct udp_pcb).chksum_len_rx'!
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_UDP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/udp.h"
-#include "lwip/def.h"
-#include "lwip/memp.h"
-#include "lwip/inet_chksum.h"
-#include "lwip/ip_addr.h"
-#include "lwip/netif.h"
-#include "lwip/icmp.h"
-#include "lwip/stats.h"
-#include "lwip/snmp.h"
-#include "arch/perf.h"
-#include "lwip/dhcp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/udp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/memp.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_addr.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/icmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
+#include "LWIP/arch/perf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/dhcp.h"
 
 #include <string.h>
 

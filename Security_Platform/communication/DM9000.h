@@ -9,7 +9,7 @@
 #define COMMUNICATION_DM9000_H_
 #include"gpio.h"
 #include "HL_reg_gio.h"
-#include "lwip/pbuf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/pbuf.h"
 
 #define     __O     volatile
 #define     __IO    volatile

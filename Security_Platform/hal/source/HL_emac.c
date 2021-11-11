@@ -1759,6 +1759,70 @@ void EMACGetConfigValue(emac_config_reg_t *config_reg, config_value_type_t type)
 /* USER CODE BEGIN (2) */
 /* USER CODE END */
 
+/* ISR for EMAC Transmit Interrupt. Calls another handler function for processing the descriptors.
+ *
+ * @return none
+ * */
+/*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
+#pragma CODE_STATE(EMACTxIntISR, 32)
+/*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
+#pragma INTERRUPT(EMACTxIntISR, IRQ)
+/* SourceId : ETH_SourceId_054 */
+/* DesignId : ETH_DesignId_054*/
+/* Requirements : HL_CONQ_EMAC_SR53 */
+void EMACTxIntISR(void)
+{
+    hdkif_t *hdkif;
+    hdkif= &hdkif_data[0U];
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    emacTxNotification(hdkif);
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    EMACTxIntHandler(hdkif);
+    EMACCoreIntAck(hdkif->emac_base, (uint32)EMAC_INT_CORE0_TX);
+    
+}
+
+/**
+ * ISR for Receive interrupt.  Calls another function for processing the received packets.
+ *
+ * @return none
+ */
+/*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
+#pragma CODE_STATE(EMACRxIntISR, 32)
+/*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
+#pragma INTERRUPT(EMACRxIntISR, IRQ)
+/* SourceId : ETH_SourceId_055 */
+/* DesignId : ETH_DesignId_055*/
+/* Requirements : HL_CONQ_EMAC_SR54 */
+void EMACRxIntISR(void)
+{
+    hdkif_t *hdkif;
+    hdkif= &hdkif_data[0U];
+    /* The data is received in the allocated receive descriptors starting from (&(hdkif->rxchptr))->active_head */
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    emacRxNotification(hdkif);
+    /* In this function, the filled receive buffer descriptors are freed for further usage and the receive interrupt is acknowledged. */
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */   
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */   
+    /*SAFETYMCUSW 45 D MR:21.1 <APPROVED> "Valid non NULL input parameters are assigned in this driver" */      
+    EMACReceive(hdkif);
+
+
+    /* Acknowledge the EMAC Core Rx Interrupts */
+    EMACCoreIntAck(hdkif->emac_base, (uint32)EMAC_INT_CORE0_RX);
+}
 
 
 /* USER CODE BEGIN (3) */

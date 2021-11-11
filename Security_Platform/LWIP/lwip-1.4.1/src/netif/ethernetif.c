@@ -1,7 +1,7 @@
-#include "netif/ethernetif.h" 
+#include "LWIP/lwip-1.4.1/src/include/netif/ethernetif.h"
 #include "dm9000.h"
 #include "ETH.h"
-#include "netif/etharp.h"  
+#include "LWIP/lwip-1.4.1/src/include/netif/etharp.h"
 #include "string.h"  
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -61,9 +61,6 @@ static struct pbuf * low_level_input(struct netif *netif)
 //netif:网卡结构体指针
 //返回值:ERR_OK,发送正常
 //       ERR_MEM,发送失败
-extern u32 timeread[30];
-extern u8 readnum;
-extern u32 time_readdata;
 err_t ethernetif_input(struct netif *netif)
 {
 	err_t err;
@@ -77,10 +74,6 @@ err_t ethernetif_input(struct netif *netif)
 		pbuf_free(p);
 		p = NULL;
 	} 	
-	if(readnum>=30)
-	readnum=0;
-	timeread[readnum]=time_readdata;	  
-  readnum++;
 	return err;
 } 
 //使用low_level_init()函数来初始化网络

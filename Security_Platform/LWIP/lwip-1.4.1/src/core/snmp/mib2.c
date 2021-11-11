@@ -35,21 +35,21 @@
  * Author: Christiaan Simons <christiaan.simons@axon.tv>
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/snmp.h"
-#include "lwip/netif.h"
-#include "lwip/ip.h"
-#include "lwip/ip_frag.h"
-#include "lwip/mem.h"
-#include "lwip/tcp_impl.h"
-#include "lwip/udp.h"
-#include "lwip/snmp_asn1.h"
-#include "lwip/snmp_structs.h"
-#include "lwip/sys.h"
-#include "netif/etharp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/ip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/ip_frag.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp_impl.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/udp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp_asn1.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp_structs.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/sys.h"
+#include "LWIP/lwip-1.4.1/src/include/netif/etharp.h"
 
 /**
  * IANA assigned enterprise ID for lwIP is 26381

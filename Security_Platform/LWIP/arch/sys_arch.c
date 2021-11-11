@@ -30,10 +30,10 @@
  *
  */
 /* lwIP includes. */
-#include "lwip/debug.h"
-#include "lwip/def.h"
-#include "lwip/lwip_sys.h"
-#include "lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/debug.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/lwip_sys.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
 #include "rti.h"
 typedef unsigned int  uint32_t;
 //为LWIP提供计时

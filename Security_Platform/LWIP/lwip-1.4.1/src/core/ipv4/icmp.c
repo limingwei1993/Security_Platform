@@ -39,16 +39,16 @@
 /* Some ICMP messages should be passed to the transport protocols. This
    is not implemented. */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_ICMP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/icmp.h"
-#include "lwip/inet_chksum.h"
-#include "lwip/ip.h"
-#include "lwip/def.h"
-#include "lwip/stats.h"
-#include "lwip/snmp.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/icmp.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
 
 #include <string.h>
 

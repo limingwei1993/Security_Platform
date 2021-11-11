@@ -25,8 +25,8 @@
 #ifndef VJ_H
 #define VJ_H
 
-#include "lwip/ip.h"
-#include "lwip/tcp_impl.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/ip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp_impl.h"
 
 #define MAX_SLOTS 16 /* must be > 2 and < 256 */
 #define MAX_HDR   128

@@ -325,7 +325,7 @@ void mapClocks(void)
     systemREG2->CLK2CNTRL = (systemREG2->CLK2CNTRL & 0xFFFFFFF0U)
                          | (uint32)((uint32)1U << 0U);
 
-    systemREG2->VCLKACON1 =  (uint32)((uint32)(1U - 1U) << 24U)
+    systemREG2->VCLKACON1 =  (uint32)((uint32)(2U - 1U) << 24U)
                            | (uint32)((uint32)0U << 20U)
                            | (uint32)((uint32)SYS_VCLK << 16U)
                            | (uint32)((uint32)(1U - 1U) << 8U)
@@ -409,7 +409,7 @@ void systemInit(void)
 /* USER CODE END */
 
     /** - set ECLK pins functional mode */
-    systemREG1->SYSPC1 = 0U;
+    systemREG1->SYSPC1 = 1U;
 
     /** - set ECLK pins default output value */
     systemREG1->SYSPC4 = 0U;
@@ -429,7 +429,7 @@ void systemInit(void)
     /** - Setup ECLK */
     systemREG1->ECPCNTL = (uint32)((uint32)0U << 24U)
                         | (uint32)((uint32)0U << 23U)
-                        | (uint32)((uint32)(8U - 1U) & 0xFFFFU);
+                        | (uint32)((uint32)(3U - 1U) & 0xFFFFU);
 
 /* USER CODE BEGIN (22) */
 /* USER CODE END */

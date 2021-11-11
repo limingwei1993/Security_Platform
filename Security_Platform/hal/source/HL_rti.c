@@ -797,6 +797,33 @@ void rtiCompare0Interrupt(void)
 
 
 
+/* USER CODE BEGIN (51) */
+/* USER CODE END */
+
+/** @fn void rtiCompare3Interrupt(void)
+*   @brief RTI1 Compare 3 Interrupt Handler
+*
+*   RTI1 Compare 3 interrupt handler 
+*
+*/
+#pragma CODE_STATE(rtiCompare3Interrupt, 32)
+#pragma INTERRUPT(rtiCompare3Interrupt, IRQ)
+
+/* SourceId : RTI_SourceId_025 */
+/* DesignId : RTI_DesignId_022 */
+/* Requirements : HL_CONQ_RTI_SR15 */
+void rtiCompare3Interrupt(void)
+{
+/* USER CODE BEGIN (52) */
+/* USER CODE END */
+
+    rtiREG1->INTFLAG = 8U;
+    rtiNotification(rtiREG1,rtiNOTIFICATION_COMPARE3);
+
+/* USER CODE BEGIN (53) */
+/* USER CODE END */
+}
+
 
 
 

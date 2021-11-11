@@ -1,7 +1,7 @@
 #ifndef __ETHERNETIF_H__
 #define __ETHERNETIF_H__
-#include "lwip/err.h"
-#include "lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/err.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
 //ALIENTEK 战舰开发板 V3

@@ -36,18 +36,18 @@
  *
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if !NO_SYS /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/sys.h"
-#include "lwip/memp.h"
-#include "lwip/mem.h"
-#include "lwip/pbuf.h"
-#include "lwip/tcpip.h"
-#include "lwip/init.h"
-#include "netif/etharp.h"
-#include "netif/ppp_oe.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/sys.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/memp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/pbuf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcpip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/init.h"
+#include "LWIP/lwip-1.4.1/src/include/netif/etharp.h"
+#include "LWIP/lwip-1.4.1/src/include/netif/ppp_oe.h"
 
 /* global variables */
 static tcpip_init_done_fn tcpip_init_done;

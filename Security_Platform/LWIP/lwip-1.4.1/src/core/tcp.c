@@ -40,18 +40,18 @@
  *
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/def.h"
-#include "lwip/mem.h"
-#include "lwip/memp.h"
-#include "lwip/snmp.h"
-#include "lwip/tcp.h"
-#include "lwip/tcp_impl.h"
-#include "lwip/debug.h"
-#include "lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/memp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp_impl.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/debug.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
 
 #include <string.h>
 

@@ -7,6 +7,7 @@
 
 #include"rti.h"
 #include"HL_rti.h"
+#include"ETH_EMAC.h"
 extern uint32_t lwip_localtime;
 void WatchDog_init(void)
 {
@@ -32,6 +33,10 @@ void rtiNotification(rtiBASE_t *rtiREG, uint32 notification)
       if(notification==rtiNOTIFICATION_COMPARE0)   /*1ms*/
       {
           lwip_localtime++;
+      }
+      if(notification==rtiNOTIFICATION_COMPARE3)   /*10ms*/
+      {
+          EMAC_lwip_periodic_handle();
       }
   }
 }

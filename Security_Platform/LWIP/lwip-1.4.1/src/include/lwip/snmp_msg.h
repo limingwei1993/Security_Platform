@@ -35,11 +35,11 @@
 #ifndef __LWIP_SNMP_MSG_H__
 #define __LWIP_SNMP_MSG_H__
 
-#include "lwip/opt.h"
-#include "lwip/snmp.h"
-#include "lwip/snmp_structs.h"
-#include "lwip/ip_addr.h"
-#include "lwip/err.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp_structs.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_addr.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/err.h"
 
 #if LWIP_SNMP
 

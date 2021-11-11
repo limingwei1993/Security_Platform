@@ -32,13 +32,13 @@
 #ifndef __LWIP_IP_H__
 #define __LWIP_IP_H__
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
-#include "lwip/def.h"
-#include "lwip/pbuf.h"
-#include "lwip/ip_addr.h"
-#include "lwip/err.h"
-#include "lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/pbuf.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_addr.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/err.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -110,7 +110,7 @@ struct ip_pcb {
 
 
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include "arch/bpstruct.h"
+#  include "LWIP/arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct ip_hdr {
@@ -140,7 +140,7 @@ struct ip_hdr {
 } PACK_STRUCT_STRUCT;
 PACK_STRUCT_END
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include "arch/epstruct.h"
+#  include "LWIP/arch/epstruct.h"
 #endif
 
 #define IPH_V(hdr)  ((hdr)->_v_hl >> 4)

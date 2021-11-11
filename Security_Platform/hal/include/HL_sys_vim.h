@@ -92,6 +92,7 @@ typedef enum systemInterrupt
 extern void esmHighInterrupt(void);
 extern void phantomInterrupt(void);
 extern void rtiCompare0Interrupt(void);
+extern void rtiCompare3Interrupt(void);
 extern void mibspi1HighLevelInterrupt(void);
 extern void lin1HighLevelInterrupt(void);
 extern void can1HighLevelInterrupt(void);
@@ -102,6 +103,8 @@ extern void can3HighLevelInterrupt(void);
 extern void mibspi4HighLevelInterrupt(void);
 extern void mibspi5HighLevelInterrupt(void);
 extern void sci3HighLevelInterrupt(void);
+extern void EMACCore0TxIsr(void);
+extern void EMACCore0RxIsr(void);
 extern void can4HighLevelInterrupt(void);
 extern void lin2HighLevelInterrupt(void);
 extern void sci4HighLevelInterrupt(void);
@@ -275,7 +278,7 @@ typedef struct vim_config_reg
                                     |(uint32)((uint32)1U << 2U)\
                                     |(uint32)((uint32)0U << 3U)\
                                     |(uint32)((uint32)0U << 4U)\
-                                    |(uint32)((uint32)0U << 5U)\
+                                    |(uint32)((uint32)1U << 5U)\
                                     |(uint32)((uint32)0U << 6U)\
                                     |(uint32)((uint32)0U << 7U)\
                                     |(uint32)((uint32)0U << 8U)\
@@ -349,9 +352,9 @@ typedef struct vim_config_reg
                                     |(uint32)((uint32)0U << 10U)\
                                     |(uint32)((uint32)0U << 11U)\
                                     |(uint32)((uint32)0U << 12U)\
-                                    |(uint32)((uint32)0U << 13U)\
+                                    |(uint32)((uint32)1U << 13U)\
                                     |(uint32)((uint32)0U << 14U)\
-                                    |(uint32)((uint32)0U << 15U)\
+                                    |(uint32)((uint32)1U << 15U)\
                                     |(uint32)((uint32)0U << 16U)\
                                     |(uint32)((uint32)0U << 17U)\
                                     |(uint32)((uint32)0U << 18U)\

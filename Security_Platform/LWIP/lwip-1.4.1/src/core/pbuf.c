@@ -61,20 +61,20 @@
  *
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
-#include "lwip/stats.h"
-#include "lwip/def.h"
-#include "lwip/mem.h"
-#include "lwip/memp.h"
-#include "lwip/pbuf.h"
-#include "lwip/lwip_sys.h"
-#include "arch/perf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/memp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/pbuf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/lwip_sys.h"
+#include "LWIP/arch/perf.h"
 #if LWIP_TCP && TCP_QUEUE_OOSEQ
-#include "lwip/tcp_impl.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp_impl.h"
 #endif
 #if LWIP_CHECKSUM_ON_COPY
-#include "lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/inet_chksum.h"
 #endif
 
 #include <string.h>

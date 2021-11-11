@@ -1096,19 +1096,19 @@ void lin1HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-        byte = (uint8)(sciREG1->RD & 0x000000FFU);
+      //  byte = (uint8)(sciREG1->RD & 0x000000FFU);
 
-            if (g_sciTransfer_t[0U].rx_length > 0U)
-            {
-                *g_sciTransfer_t[0U].rx_data = byte;
-                g_sciTransfer_t[0U].rx_data++;
+       //     if (g_sciTransfer_t[0U].rx_length > 0U)
+       //     {
+       //         *g_sciTransfer_t[0U].rx_data = byte;
+       //         g_sciTransfer_t[0U].rx_data++;
                 
-                g_sciTransfer_t[0U].rx_length--;
-                if (g_sciTransfer_t[0U].rx_length == 0U)
-                {
+        //        g_sciTransfer_t[0U].rx_length--;
+        //        if (g_sciTransfer_t[0U].rx_length == 0U)
+         //       {
                     sciNotification(sciREG1, (uint32)SCI_RX_INT);
-                }
-            }
+          //      }
+         //   }
         
         break;
 

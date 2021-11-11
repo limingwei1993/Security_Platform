@@ -42,8 +42,8 @@
  * Include user defined options first. Anything not defined in these files
  * will be set to standard values. Override anything you dont like!
  */
-#include "lwipopts.h"
-#include "lwip/debug.h"
+#include "LWIP/lwip_app/lwip_comm/lwipopts.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/debug.h"
 
 /*
    -----------------------------------------------

@@ -36,13 +36,13 @@
  *
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_STATS /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/def.h"
-#include "lwip/stats.h"
-#include "lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
 
 #include <string.h>
 
@@ -54,7 +54,7 @@ void stats_init(void)
 #if MEMP_STATS
   const char * memp_names[] = {
 #define LWIP_MEMPOOL(name,num,size,desc) desc,
-#include "lwip/memp_std.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/memp_std.h"
   };
   int i;
   for (i = 0; i < MEMP_MAX; i++) {

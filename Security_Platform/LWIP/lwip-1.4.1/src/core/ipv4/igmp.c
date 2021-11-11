@@ -77,21 +77,21 @@ Steve Reynolds
  * Includes
  *----------------------------------------------------------------------------*/
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_IGMP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/igmp.h"
-#include "lwip/debug.h"
-#include "lwip/def.h"
-#include "lwip/mem.h"
-#include "lwip/ip.h"
-#include "lwip/inet_chksum.h"
-#include "lwip/netif.h"
-#include "lwip/icmp.h"
-#include "lwip/udp.h"
-#include "lwip/tcp.h"
-#include "lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/igmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/debug.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/mem.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/ip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/icmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/udp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
 
 #include "string.h"
 

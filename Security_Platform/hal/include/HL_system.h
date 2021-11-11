@@ -313,7 +313,7 @@ typedef struct system_config_reg
 } system_config_reg_t;
 
 /* Configuration registers initial value */
-#define SYS_SYSPC1_CONFIGVALUE  0U
+#define SYS_SYSPC1_CONFIGVALUE  1U
 
 #define SYS_SYSPC2_CONFIGVALUE  1U
 
@@ -395,7 +395,7 @@ typedef struct system_config_reg
                                     
 #define SYS_ECPCNTL_CONFIGVALUE     ( (uint32)((uint32)0U << 24U)\
                                     | (uint32)((uint32)0U << 23U)\
-                                    | (uint32)((uint32)(8U - 1U) & 0xFFFFU) )
+                                    | (uint32)((uint32)(3U - 1U) & 0xFFFFU) )
                                 
 #define SYS_DEVCR1_CONFIGVALUE  0xAU
 
@@ -410,7 +410,7 @@ typedef struct system_config_reg
 #define SYS2_ECPCNTL1_CONFIGVALUE   0x50000000U
 #define SYS2_CLK2CNTRL_CONFIGVALUE  (1U | 0x00000100U)
 #define SYS2_HCLKCNTL_CONFIGVALUE    1U
-#define SYS2_VCLKACON1_CONFIGVALUE  ( (uint32)((uint32)1U << 24U) \
+#define SYS2_VCLKACON1_CONFIGVALUE  ( (uint32)((uint32)2U << 24U) \
 									| (uint32)((uint32)1U << 20U) \
                                     | (uint32)((uint32)SYS_VCLK << 16U)\
                                     | (uint32)((uint32)1U << 8U)\

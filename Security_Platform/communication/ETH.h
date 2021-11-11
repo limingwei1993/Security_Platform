@@ -7,25 +7,24 @@
 
 #ifndef COMMUNICATION_ETH_H_
 #define COMMUNICATION_ETH_H_
+#include <LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_frag.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/dhcp.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/init.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/mem.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/memp.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/raw.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/tcp.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/tcp_impl.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/tcpip.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/timers.h>
+#include <LWIP/lwip-1.4.1/src/include/lwip/udp.h>
+#include <LWIP/lwip-1.4.1/src/include/netif/etharp.h>
 #include "HL_hal_stdtypes.h"
-#include "netif/etharp.h"
-#include "lwip/dhcp.h"
-#include "lwip/mem.h"
-#include "lwip/memp.h"
-#include "lwip/init.h"
-#include "ethernetif.h"
-#include "lwip/timers.h"
-#include "lwip/tcp_impl.h"
-#include "lwip/ip_frag.h"
-#include "lwip/tcpip.h"
-#include "lwip/raw.h"
-#include "lwip/udp.h"
-#include "lwip/tcp.h"
+#include "LWIP/lwip-1.4.1/src/include/netif/ethernetif.h"
 #define ETH_REVICE_BUFF_MAX_LEN 1024 /*ETH TCP 接收数据缓冲区长度*/
 #define ETH_SEND_BUFF_MAX_LEN 1024   /*ETH TCP 发送数据缓冲区长度*/
 #define ETH_TCP_NUM 10               /*ETH TCP 连接的数量*/
 #define LWIP_MAX_DHCP_TRIES     4   //DHCP服务器最大重试次数
-
 //lwip控制结构体
 typedef struct
 {
@@ -53,6 +52,7 @@ typedef struct  ETH_Info_s
 
 typedef struct  SOCKET_s
 {
+    uint32 IP;        /*对面网络IP*/
     uint16 port;       /*本机网络端口号*/
     uint32 oIP;        /*对面网络IP*/
     uint16 oport;      /*对面网络端口号*/

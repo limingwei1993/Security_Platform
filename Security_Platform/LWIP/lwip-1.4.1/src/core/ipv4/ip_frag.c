@@ -38,14 +38,14 @@
  * 
  */
 
-#include "lwip/opt.h"
-#include "lwip/ip_frag.h"
-#include "lwip/def.h"
-#include "lwip/inet_chksum.h"
-#include "lwip/netif.h"
-#include "lwip/snmp.h"
-#include "lwip/stats.h"
-#include "lwip/icmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/ip_frag.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/def.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/netif.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/snmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/stats.h"
+#include "LWIP/lwip-1.4.1/src/include/ipv4/lwip/icmp.h"
 
 #include <string.h>
 

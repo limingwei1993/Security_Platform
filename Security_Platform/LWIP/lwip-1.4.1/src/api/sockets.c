@@ -38,22 +38,22 @@
  *
  */
 
-#include "lwip/opt.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/opt.h"
 
 #if LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/sockets.h"
-#include "lwip/api.h"
-#include "lwip/sys.h"
-#include "lwip/igmp.h"
-#include "lwip/inet.h"
-#include "lwip/tcp.h"
-#include "lwip/raw.h"
-#include "lwip/udp.h"
-#include "lwip/tcpip.h"
-#include "lwip/pbuf.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/sockets.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/api.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/sys.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/igmp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/inet.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/raw.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/udp.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/tcpip.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/pbuf.h"
 #if LWIP_CHECKSUM_ON_COPY
-#include "lwip/inet_chksum.h"
+#include "LWIP/lwip-1.4.1/src/include/lwip/inet_chksum.h"
 #endif
 
 #include <string.h>
