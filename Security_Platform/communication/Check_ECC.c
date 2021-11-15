@@ -8,6 +8,12 @@
 
 #include "Hl_reg_l2ramw.h"
 #include "Hl_reg_flash.h"
+/******************
+ * 函数：uint8_t RAM_ECC(void)
+ * 功能：RAM制造ECC
+ * 输入：无
+ * 输出：制造的ECC结果；0--无ECC产生；1--有ECC产生
+ * *******************/
 uint8_t RAM_ECC(void)
 {
     uint32_t ECC_Statues=0;
@@ -26,7 +32,12 @@ uint8_t RAM_ECC(void)
         return 1;
 }
 
-
+/******************
+ * 函数：uint8_t Flash_ECC(void)
+ * 功能：flash制造ECC
+ * 输入：无
+ * 输出：制造的ECC结果；0--无ECC产生；1--有ECC产生
+ * *******************/
 uint8_t Flash_ECC(void)
 {
     uint32_t flash_ecc_satues=0;

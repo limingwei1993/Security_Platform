@@ -6,12 +6,23 @@
  */
 
 #include "DM9000.h"
-struct dm9000_config dm9000cfg;
+struct dm9000_config dm9000cfg; /*DM9000的参数*/
+/******************
+ * 函数：void delay_ms(uint32 num)
+ * 功能：延时
+ * 输入：num：延时长短
+ * 输出：无
+ * *******************/
 void delay_ms(uint32 num)
 {
     while(num--);
 }
-
+/******************
+ * 函数：uint8 DM9000_Init(void)
+ * 功能：DM900初始化
+ * 输入：num：延时长短
+ * 输出：初始化结果；0--成功；1--DM9000 ID 错误。
+ * *******************/
 uint8 DM9000_Init(void)
 {
     uint32 temp=0;
@@ -57,22 +68,36 @@ uint8 DM9000_Init(void)
     DM9000_WriteReg(DM9000_IMR,dm9000cfg.imr_all);
     return 0;
 }
-
-
+/******************
+ * 函数：uint16 DM9000_ReadReg(uint16 reg)
+ * 功能：读取DM900寄存器
+ * 输入：：寄存器地址
+ * 输出：寄存器的值。
+ * *******************/
 uint16 DM9000_ReadReg(uint16 reg)
 {
     DM9000_IO_CMD=reg;
     return DM9000_IO_DATA;
 }
 
-
+/******************
+ * 函数：void DM9000_WriteReg(uint16 reg,uint16 data)
+ * 功能：写DM900寄存器
+ * 输入：reg：寄存器地址
+ *     data：写入寄存器的值
+ * 输出：无。
+ * *******************/
 void DM9000_WriteReg(uint16 reg,uint16 data)
 {
     DM9000_IO_CMD=reg;
     DM9000_IO_DATA=data;
 }
-
-
+/******************
+ * 函数：uint16 DM9000_PHY_ReadReg(uint16 reg)
+ * 功能：读取DM900 PHY的寄存器
+ * 输入：：寄存器地址
+ * 输出：  寄存器的值。
+ * *******************/
 uint16 DM9000_PHY_ReadReg(uint16 reg)
 {
     uint16 temp;
@@ -84,7 +109,13 @@ uint16 DM9000_PHY_ReadReg(uint16 reg)
     return temp;
 }
 
-
+/******************
+ * 函数：void DM9000_PHY_WriteReg(uint16 reg,uint16 data)
+ * 功能：写DM900 PHY的寄存器
+ * 输入：reg：寄存器地址
+ *     data：写入寄存器的值
+ * 输出：无。
+ * *******************/
 void DM9000_PHY_WriteReg(uint16 reg,uint16 data)
 {
     DM9000_WriteReg(DM9000_EPAR,DM9000_PHY|reg);
@@ -95,7 +126,12 @@ void DM9000_PHY_WriteReg(uint16 reg,uint16 data)
     DM9000_WriteReg(DM9000_EPCR,0X00);
 }
 
-
+/******************
+ * 函数：uint32 DM9000_Get_DeiviceID(void)
+ * 功能：读取DM900 的ID
+ * 输入：：无
+ * 输出：  ID。
+ * *******************/
 uint32 DM9000_Get_DeiviceID(void)
 {
     uint32 value;
@@ -105,7 +141,12 @@ uint32 DM9000_Get_DeiviceID(void)
     value|=DM9000_ReadReg(DM9000_PIDH) << 24;
     return value;
 }
-
+/******************
+ * 函数：uint8 DM9000_Get_SpeedAndDuplex(void)
+ * 功能：读取DM900 网速
+ * 输入：：无
+ * 输出：  网速。
+ * *******************/
 
 uint8 DM9000_Get_SpeedAndDuplex(void)
 {
@@ -133,7 +174,12 @@ uint8 DM9000_Get_SpeedAndDuplex(void)
     return temp;
 }
 
-
+/******************
+ * 函数：void DM9000_Set_PHYMode(uint8 mode)
+ * 功能：设置DM900 PHY的模式
+ * 输入：：mode：模式参数
+ * 输出：  无。
+ * *******************/
 void DM9000_Set_PHYMode(uint8 mode)
 {
     uint16 BMCR_Value,ANAR_Value;
@@ -165,7 +211,12 @@ void DM9000_Set_PHYMode(uint8 mode)
     DM9000_WriteReg(DM9000_GPR,0X00);
 }
 
-
+/******************
+ * 函数：void DM9000_Set_MACAddress(uint8 *macaddr)
+ * 功能：设置DM900 的MAC地址
+ * 输入：：macaddr：MAC地址
+ * 输出：  无。
+ * *******************/
 void DM9000_Set_MACAddress(uint8 *macaddr)
 {
     uint8 i;
@@ -175,7 +226,12 @@ void DM9000_Set_MACAddress(uint8 *macaddr)
     }
 }
 
-
+/******************
+ * 函数：void DM9000_Set_Multicast(uint8 *multicastaddr)
+ * 功能：设置DM900 的多播地址
+ * 输入：：multicastaddr：多播地址地址
+ * 输出：  无。
+ * *******************/
 void DM9000_Set_Multicast(uint8 *multicastaddr)
 {
     uint8 i;
@@ -185,7 +241,12 @@ void DM9000_Set_Multicast(uint8 *multicastaddr)
     }
 }
 
-
+/******************
+ * 函数：void DM9000_Reset(void)
+ * 功能：DM900复位
+ * 输入：：无
+ * 输出：  无。
+ * *******************/
 void DM9000_Reset(void)
 {
     DM9000_RST(0);
@@ -207,7 +268,12 @@ void DM9000_Reset(void)
     }while (DM9000_ReadReg(DM9000_NCR)&1);
 }
 
-
+/******************
+ * 函数：void DM9000_SendPacket(struct pbuf *p)
+ * 功能：DM900发送数据包
+ * 输入：：p：数据包帧。
+ * 输出：  无。
+ * *******************/
 void DM9000_SendPacket(struct pbuf *p)
 {
     struct pbuf *q;
@@ -241,7 +307,12 @@ void DM9000_SendPacket(struct pbuf *p)
     DM9000_WriteReg(DM9000_ISR,0X02);
     DM9000_WriteReg(DM9000_IMR,dm9000cfg.imr_all);
 }
-
+/******************
+ * 函数：struct pbuf *DM9000_Receive_Packet(void)
+ * 功能：DM900接收数据
+ * 输入：：无。
+ * 输出：  接收的数据帧。
+ * *******************/
 struct pbuf *DM9000_Receive_Packet(void)
 {
     struct pbuf* p;

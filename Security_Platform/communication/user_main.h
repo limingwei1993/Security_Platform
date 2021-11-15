@@ -11,6 +11,8 @@
 
 #include"spi.h"
 #include"can.h"
+#include"ADC.h"
+#include"HL_adc.h"
 #include"sci.h"
 #include"IIC.h"
 #include"FlexRay.h"

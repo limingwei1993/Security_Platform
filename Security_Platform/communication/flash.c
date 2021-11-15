@@ -8,7 +8,7 @@
 
 #include "flash.h"
 #include "F021.h"
-
+/*flash 地址*/
 struct Sector_List gSector_List[SECTOR_NUM] =
 {
      {Fapi_FlashBank0,    0,      0x00000000, 16*1024},
@@ -77,7 +77,14 @@ struct Sector_List gSector_List[SECTOR_NUM] =
      {Fapi_FlashBank7,    31,      0xF021F000, 4*1024},
 
 };
-
+/******************
+ * 函数：void Internal_FLASH_write(uint32 addr, uint8* buff, uint8 len)
+ * 功能：flash写数据
+ * 输入：：addr：写数据的地址。
+ *       buff：写入的数据
+ *       len：要写的数据长度
+ * 输出：  无。
+ * *******************/
 void Internal_FLASH_write(uint32 addr, uint8* buff, uint8 len)
 {
     uint8 multiple=0;
@@ -115,7 +122,14 @@ void Internal_FLASH_write(uint32 addr, uint8* buff, uint8 len)
         while(FLASH_CONTROL_REGISTER->FmStat.FMSTAT_BITS.BUSY == Fapi_Status_FsmBusy);
     }
 }
-
+/******************
+ * 函数：void Internal_FLASH_read(uint32 addr, uint8* buff, uint8 len)
+ * 功能：flash读数据
+ * 输入：：addr：读数据的地址。
+ *       buff：保存读出的数据
+ *       len：要读的数据长度
+ * 输出：  无。
+ * *******************/
 void Internal_FLASH_read(uint32 addr, uint8* buff, uint8 len)
 {
     memcpy(buff, addr, len);

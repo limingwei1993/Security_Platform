@@ -10,52 +10,63 @@
 #include"HL_reg_can.h"
 #include "HL_sys_dma.h"
 
-uint8 static s_canByteOrder[8U] = {3U, 2U, 1U, 0U, 7U, 6U, 5U, 4U};
-uint8 CAN1_RX_DATA[CAN1_RX_DATA_LEN];
-uint8 CAN2_RX_DATA[CAN2_RX_DATA_LEN];
-uint8 CAN3_RX_DATA[CAN3_RX_DATA_LEN];
-uint8 CAN4_RX_DATA[CAN4_RX_DATA_LEN];
-uint8 CAN1_TX_DATA[CAN1_TX_DATA_LEN];
-uint8 CAN2_TX_DATA[CAN2_TX_DATA_LEN];
-uint8 CAN3_TX_DATA[CAN3_TX_DATA_LEN];
-uint8 CAN4_TX_DATA[CAN4_TX_DATA_LEN];
-bool DMA_CAN1_TX=true;
-bool DMA_CAN2_TX=false;
-bool DMA_CAN3_TX=false;
-bool DMA_CAN4_TX=false;
-bool DMA_CAN1_RX=true;
-bool DMA_CAN2_RX=true;
-bool DMA_CAN3_RX=true;
-bool DMA_CAN4_RX=true;
+uint8 static s_canByteOrder[8U] = {3U, 2U, 1U, 0U, 7U, 6U, 5U, 4U}; /*用于CAN发送数据时使用，定位字节的位顺序*/
+uint8 CAN1_RX_DATA[CAN1_RX_DATA_LEN]; /*CAN1 保存DMA接收到的数据*/
+uint8 CAN2_RX_DATA[CAN2_RX_DATA_LEN]; /*CAN2 保存DMA接收到的数据*/
+uint8 CAN3_RX_DATA[CAN3_RX_DATA_LEN]; /*CAN3 保存DMA接收到的数据*/
+uint8 CAN4_RX_DATA[CAN4_RX_DATA_LEN]; /*CAN4 保存DMA接收到的数据*/
+uint8 CAN1_TX_DATA[CAN1_TX_DATA_LEN]; /*CAN1 DMA往外发出的数据*/
+uint8 CAN2_TX_DATA[CAN2_TX_DATA_LEN]; /*CAN2 DMA往外发出的数据*/
+uint8 CAN3_TX_DATA[CAN3_TX_DATA_LEN]; /*CAN3 DMA往外发出的数据*/
+uint8 CAN4_TX_DATA[CAN4_TX_DATA_LEN]; /*CAN4 DMA往外发出的数据*/
+bool DMA_CAN1_TX=true;   /*CAN1 启用DMA发送的标志；true--使用、false--不使用*/
+bool DMA_CAN2_TX=false;  /*CAN2 启用DMA发送的标志；true--使用、false--不使用*/
+bool DMA_CAN3_TX=false;  /*CAN3 启用DMA发送的标志；true--使用、false--不使用*/
+bool DMA_CAN4_TX=false;  /*CAN4 启用DMA发送的标志；true--使用、false--不使用*/
+bool DMA_CAN1_RX=true;   /*CAN1 启用DMA接收的标志；true--使用、false--不使用*/
+bool DMA_CAN2_RX=true;   /*CAN2 启用DMA接收的标志；true--使用、false--不使用*/
+bool DMA_CAN3_RX=true;   /*CAN3 启用DMA接收的标志；true--使用、false--不使用*/
+bool DMA_CAN4_RX=true;   /*CAN4 启用DMA接收的标志；true--使用、false--不使用*/
 
-g_dmaCTRL g_dmaCTRLPKT_CAN1_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN1_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN2_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN2_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN3_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN3_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN4_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_CAN4_RX;             /* dma control packet configuration stack */
+g_dmaCTRL g_dmaCTRLPKT_CAN1_TX;             /* CAN1 发送数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN1_RX;             /* CAN1 接收数据的DMA配置句柄*/
+g_dmaCTRL g_dmaCTRLPKT_CAN2_TX;             /* CAN2 发送数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN2_RX;             /* CAN2 接收数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN3_TX;             /* CAN3 发送数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN3_RX;             /* CAN3 接收数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN4_TX;             /* CAN4 发送数据的DMA配置句柄 */
+g_dmaCTRL g_dmaCTRLPKT_CAN4_RX;             /* CAN4 接收数据的DMA配置句柄 */
+/*CAN1 消息邮箱分配表*/
 CAN_McanMESSAGE_BOX CAN1_McanMESSAGE_BOX_TABLE[CAN_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+/*CAN2 消息邮箱分配表*/
 CAN_McanMESSAGE_BOX CAN2_McanMESSAGE_BOX_TABLE[CAN_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+/*CAN3 消息邮箱分配表*/
 CAN_McanMESSAGE_BOX CAN3_McanMESSAGE_BOX_TABLE[CAN_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+/*CAN4 消息邮箱分配表*/
 CAN_McanMESSAGE_BOX CAN4_McanMESSAGE_BOX_TABLE[CAN_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
-CAN_MSG_Revice CAN1_MSG_buff;
-CAN_MSG_Revice CAN2_MSG_buff;
-CAN_MSG_Revice CAN3_MSG_buff;
-CAN_MSG_Revice CAN4_MSG_buff;
+CAN_MSG_Revice CAN1_MSG_buff; /*CAN1 保存接收的数据*/
+CAN_MSG_Revice CAN2_MSG_buff; /*CAN2 保存接收的数据*/
+CAN_MSG_Revice CAN3_MSG_buff; /*CAN3 保存接收的数据*/
+CAN_MSG_Revice CAN4_MSG_buff; /*CAN4 保存接收的数据*/
+/******************
+ * 函数：void CAN_init(CAN_Info canx)
+ * 功能：CAN 初始化
+ * 输入：canx：配置参数句柄。->ch：CAN的编号；可选：CAN1、CAN2、CAN3、CAN4。
+ *                    ->burt：波特率
+ * 输出：无
+ * *******************/
 void CAN_init(CAN_Info canx)
 {
     uint32 bau=0;
@@ -4895,12 +4906,13 @@ void CAN_init(CAN_Info canx)
     }
 }
 
-/*******************************************************************************
-Function:       // mibspidma_Init
-Description:    // Initialization of MIBSPI DMA communication module
-Input:          // none
-Output:         // none
-*******************************************************************************/
+/******************
+ * 函数：void CAN_DMA_init(CAN_Info canx)
+ * 功能：CAN DMA初始化
+ * 输入：canx：配置参数句柄。->ch：CAN的编号；可选：CAN1、CAN2、CAN3、CAN4。
+ *                    ->burt：波特率
+ * 输出：无
+ * *******************/
 void CAN_DMA_init(CAN_Info canx)
 {
 
@@ -5104,7 +5116,16 @@ void CAN_DMA_init(CAN_Info canx)
     }
 }
 
-
+/******************
+ * 函数：void CAN_Tx(CAN_Info canx,uint32 ID,uint8* buff,uint32 len)
+ * 功能：CAN 发送数据
+ * 输入：canx：配置参数句柄。->ch：CAN的编号；可选：CAN1、CAN2、CAN3、CAN4。
+ *                    ->burt：波特率
+ *     ID：帧ID。
+ *     buff：发送的数据。
+ *     len：发送数据的长度
+ * 输出：无
+ * *******************/
 void CAN_Tx(CAN_Info canx,uint32 ID,uint8* buff,uint32 len)
 {
     uint8 i=0;
@@ -5120,8 +5141,6 @@ void CAN_Tx(CAN_Info canx,uint32 ID,uint8* buff,uint32 len)
             {
                 CAN1_TX_DATA[s_canByteOrder[i]]=buff[i];
             }
-            canREG1->IF1CMD = 0x87U;
-            canREG1->IF1STAT  =0x40;
             dmaSetChEnable(DMA_CAN1_TRANSMIT_channel, DMA_HW);
 
         }
@@ -5209,7 +5228,14 @@ void CAN_Tx(CAN_Info canx,uint32 ID,uint8* buff,uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：uint32 Get_CanMcanMESSAGE_BOX_Num(CAN_Info canx,uint32 ID)
+ * 功能：根据ID获取获取发送数据的BOX号
+ * 输入：canx：配置参数句柄。->ch：CAN的编号；可选：CAN1、CAN2、CAN3、CAN4。
+ *                    ->burt：波特率
+ *     ID：帧ID。
+ * 输出：发送数据的BOX号
+ * *******************/
 uint32 Get_CanMcanMESSAGE_BOX_Num(CAN_Info canx,uint32 ID)
 {
     uint8 i=0;
@@ -5263,7 +5289,15 @@ uint32 Get_CanMcanMESSAGE_BOX_Num(CAN_Info canx,uint32 ID)
     return box;
 
 }
-
+/******************
+ * 函数：void CAN_Tx_bind(CAN_Info canx, uint32 ID,uint8 messagebox)
+ * 功能：绑定ID与BOX号关系
+ * 输入：canx：配置参数句柄。->ch：CAN的编号；可选：CAN1、CAN2、CAN3、CAN4。
+ *                    ->burt：波特率
+ *     ID：帧ID。
+ *     messagebox：BOX编号
+ * 输出：无
+ * *******************/
 void CAN_Tx_bind(CAN_Info canx, uint32 ID,uint8 messagebox)
 {
     uint8 i=0;
@@ -5350,8 +5384,13 @@ void CAN_Tx_bind(CAN_Info canx, uint32 ID,uint8 messagebox)
 
     }
 }
-
-
+/******************
+ * 函数：void CAN1_revive(uint32 canrevID,uint8 * revice_data)
+ * 功能：CAN1接收数据
+ * 输入：canrevID：帧ID。
+ *     revice_data：帧数据。
+ * 输出：无
+ * *******************/
 void CAN1_revive(uint32 canrevID,uint8 * revice_data)
 {
 
@@ -5360,6 +5399,13 @@ void CAN1_revive(uint32 canrevID,uint8 * revice_data)
        CAN1_MSG_buff.revicebuf[CAN1_MSG_buff.tail].ID=canrevID;
        CAN1_MSG_buff.tail = (CAN1_MSG_buff.tail + 1) % CAN_MSG_Revice_NUM;
 }
+/******************
+ * 函数：void CAN2_revive(uint32 canrevID,uint8 * revice_data)
+ * 功能：CAN2接收数据
+ * 输入：canrevID：帧ID。
+ *     revice_data：帧数据。
+ * 输出：无
+ * *******************/
 void CAN2_revive(uint32 canrevID,uint8 * revice_data)
 {
       /*The queue is full, and the data at the head of the column is discarded. */
@@ -5367,6 +5413,13 @@ void CAN2_revive(uint32 canrevID,uint8 * revice_data)
        CAN2_MSG_buff.revicebuf[CAN2_MSG_buff.tail].ID=canrevID;
        CAN2_MSG_buff.tail = (CAN2_MSG_buff.tail + 1) % CAN_MSG_Revice_NUM;
 }
+/******************
+ * 函数：void CAN3_revive(uint32 canrevID,uint8 * revice_data)
+ * 功能：CAN3接收数据
+ * 输入：canrevID：帧ID。
+ *     revice_data：帧数据。
+ * 输出：无
+ * *******************/
 void CAN3_revive(uint32 canrevID,uint8 * revice_data)
 {
       /*The queue is full, and the data at the head of the column is discarded. */
@@ -5374,6 +5427,13 @@ void CAN3_revive(uint32 canrevID,uint8 * revice_data)
        CAN3_MSG_buff.revicebuf[CAN3_MSG_buff.tail].ID=canrevID;
        CAN3_MSG_buff.tail = (CAN3_MSG_buff.tail + 1) % CAN_MSG_Revice_NUM;
 }
+/******************
+ * 函数：void CAN4_revive(uint32 canrevID,uint8 * revice_data)
+ * 功能：CAN4接收数据
+ * 输入：canrevID：帧ID。
+ *     revice_data：帧数据。
+ * 输出：无
+ * *******************/
 void CAN4_revive(uint32 canrevID,uint8 * revice_data)
 {
       /*The queue is full, and the data at the head of the column is discarded. */
@@ -5381,13 +5441,13 @@ void CAN4_revive(uint32 canrevID,uint8 * revice_data)
        CAN4_MSG_buff.revicebuf[CAN4_MSG_buff.tail].ID=canrevID;
        CAN4_MSG_buff.tail = (CAN4_MSG_buff.tail + 1) % CAN_MSG_Revice_NUM;
 }
-/*******************************************************************************
-Function:       // canMessageNotification
-Description:    // CAN interrupt handler
-Input:          // node       : hardware CAN module trigger the interrupt.(canREG1,canREG2,canREG3).
-                // messageBox : messagebox in CAN module which trigger the interrupt
-Output:         // none
-*******************************************************************************/
+/******************
+ * 函数：void canMessageNotification(canBASE_t *node, uint32 messageBox)
+ * 功能：CAN1接收数据中断服务函数
+ * 输入：node：接口地址。
+ *     messageBox：box号。
+ * 输出：无
+ * *******************/
 void canMessageNotification(canBASE_t *node, uint32 messageBox)
 {
     uint8 revdata[8U];

@@ -137,7 +137,7 @@ void sciInit(void)
     sciREG1->SETINT = (uint32)((uint32)0U << 26U)  /* Framing error */
                    | (uint32)((uint32)0U << 25U)  /* Overrun error */
                    | (uint32)((uint32)0U << 24U)  /* Parity error */
-                   | (uint32)((uint32)0U << 9U)  /* Receive */
+                   | (uint32)((uint32)1U << 9U)  /* Receive */
                    | (uint32)((uint32)0U << 1U)  /* Wakeup */
                    | (uint32)((uint32)0U << 0U);  /* Break detect */
 
@@ -213,7 +213,7 @@ void sciInit(void)
     sciREG2->SETINT = (uint32)((uint32)0U << 26U)  /* Framing error */
                    | (uint32)((uint32)0U << 25U)  /* Overrun error */
                    | (uint32)((uint32)0U << 24U)  /* Parity error */
-                   | (uint32)((uint32)0U << 9U)  /* Receive */
+                   | (uint32)((uint32)1U << 9U)  /* Receive */
                    | (uint32)((uint32)0U << 1U)  /* Wakeup */
                    | (uint32)((uint32)0U << 0U);  /* Break detect */
 
@@ -290,7 +290,7 @@ void sciInit(void)
     sciREG3->SETINT = (uint32)((uint32)0U << 26U)  /* Framing error */
                    | (uint32)((uint32)0U << 25U)  /* Overrun error */
                    | (uint32)((uint32)0U << 24U)  /* Parity error */
-                   | (uint32)((uint32)0U << 9U)  /* Receive */
+                   | (uint32)((uint32)1U << 9U)  /* Receive */
                    | (uint32)((uint32)0U << 1U)  /* Wakeup */
                    | (uint32)((uint32)0U << 0U);  /* Break detect */
 
@@ -366,7 +366,7 @@ void sciInit(void)
     sciREG4->SETINT = (uint32)((uint32)0U << 26U)  /* Framing error */
                    | (uint32)((uint32)0U << 25U)  /* Overrun error */
                    | (uint32)((uint32)0U << 24U)  /* Parity error */
-                   | (uint32)((uint32)0U << 9U)  /* Receive */
+                   | (uint32)((uint32)1U << 9U)  /* Receive */
                    | (uint32)((uint32)0U << 1U)  /* Wakeup */
                    | (uint32)((uint32)0U << 0U);  /* Break detect */
 
@@ -1096,19 +1096,19 @@ void lin1HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-      //  byte = (uint8)(sciREG1->RD & 0x000000FFU);
+        byte = (uint8)(sciREG1->RD & 0x000000FFU);
 
-       //     if (g_sciTransfer_t[0U].rx_length > 0U)
-       //     {
-       //         *g_sciTransfer_t[0U].rx_data = byte;
-       //         g_sciTransfer_t[0U].rx_data++;
+            if (g_sciTransfer_t[0U].rx_length > 0U)
+            {
+                *g_sciTransfer_t[0U].rx_data = byte;
+                g_sciTransfer_t[0U].rx_data++;
                 
-        //        g_sciTransfer_t[0U].rx_length--;
-        //        if (g_sciTransfer_t[0U].rx_length == 0U)
-         //       {
+                g_sciTransfer_t[0U].rx_length--;
+                if (g_sciTransfer_t[0U].rx_length == 0U)
+                {
                     sciNotification(sciREG1, (uint32)SCI_RX_INT);
-          //      }
-         //   }
+                }
+            }
         
         break;
 

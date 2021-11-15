@@ -10,10 +10,22 @@
 #include"HL_reg_adc.h"
 #include "HL_reg_dma.h"
 #include "HL_sys_dma.h"
-ADC_Single_Channel_Info ADC_Signle_channel[ADC1_SINGLE_DATA_LEN];
-g_dmaCTRL g_dmaCTRLPKT_ADC1_Single;
-g_dmaCTRL g_dmaCTRLPKT_ADC1_Continues;
-void ADC_Single_Init(uint8_t group)
+g_dmaCTRL g_dmaCTRLPKT_ADC1_Single;    /*ADC单次转换的DMA配置句柄*/
+g_dmaCTRL g_dmaCTRLPKT_ADC1_Continues; /*ADC连续转换的DMA配置句柄*/
+uint8_t DMA_ADC1_Single_REQUEST_LINE[3]={DMA_REQ7,DMA_REQ10,DMA_REQ11};/*ADC连续转换的DMA中断线*/
+uint8_t DMA_ADC1_Continues_REQUEST_LINE[3]={DMA_REQ7,DMA_REQ10,DMA_REQ11};/*ADC连续转换的DMA中断线*/
+extern  uint32 s_adcSelect[2U][3U];    /*ADC采样的通道标志，【2】--ADC1、ADC2；【3】--EVENT、goup1、group2*/
+/******************
+ * 函数：void ADC_Single_Init(uint8_t group,uint8_t Source)
+ * 功能：ADC单次采样初始化
+ * 输入：group： 使用ADC的那个组；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *     Source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+ * 输出：无
+ * *******************/
+void ADC_Single_Init(uint8_t group,uint8_t Source)
 {
     /** - Reset ADC module */
     adcREG1->RSTCR = 1U;
@@ -41,7 +53,7 @@ void ADC_Single_Init(uint8_t group)
             *     - Setup hardware trigger source
             */
            adcREG1->EVSRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_EVENT;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
            /** - Setup event group sample window */
            adcREG1->EVSAMP = 1U;
            /** - Setup event group sample discharge
@@ -67,7 +79,7 @@ void ADC_Single_Init(uint8_t group)
             *     - Setup hardware trigger source
             */
            adcREG1->G1SRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_GIOB0;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
 
            /** - Setup group 1 sample window */
            adcREG1->G1SAMP = 1U;
@@ -95,7 +107,7 @@ void ADC_Single_Init(uint8_t group)
            *     - Setup hardware trigger source
            */
            adcREG1->G2SRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_EVENT;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
 
            /** - Setup group 2 sample window */
            adcREG1->G2SAMP = 1U;
@@ -137,8 +149,17 @@ void ADC_Single_Init(uint8_t group)
     /** - Setup parity */
     adcREG1->PARCR = 0x00000005U;
 }
-
-void ADC_Continuous_Init(uint8_t group)
+/******************
+ * 函数：void ADC_Continuous_Init(uint8_t group,uint8_t Source)
+ * 功能：ADC连续采样初始化
+ * 输入：group： 使用ADC的那个组；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *     Source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+ * 输出：无
+ * *******************/
+void ADC_Continuous_Init(uint8_t group,uint8_t Source)
 {
     /** - Reset ADC module */
     adcREG1->RSTCR = 1U;
@@ -166,7 +187,7 @@ void ADC_Continuous_Init(uint8_t group)
             *     - Setup hardware trigger source
             */
            adcREG1->EVSRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_EVENT;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
            /** - Setup event group sample window */
            adcREG1->EVSAMP = 1U;
            /** - Setup event group sample discharge
@@ -192,7 +213,7 @@ void ADC_Continuous_Init(uint8_t group)
             *     - Setup hardware trigger source
             */
            adcREG1->G1SRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_GIOB0;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
 
            /** - Setup group 1 sample window */
            adcREG1->G1SAMP = 1U;
@@ -220,7 +241,7 @@ void ADC_Continuous_Init(uint8_t group)
            *     - Setup hardware trigger source
            */
            adcREG1->G2SRC = (uint32)0x00000008U  /*Rising Edge*/
-                          | (uint32)ADC1_EVENT;  /*trigger source*/
+                          | (uint32)Source;  /*trigger source*/
 
            /** - Setup group 2 sample window */
            adcREG1->G2SAMP = 1U;
@@ -262,18 +283,41 @@ void ADC_Continuous_Init(uint8_t group)
     /** - Setup parity */
     adcREG1->PARCR = 0x00000005U;
 }
-
+/******************
+ * 函数：void ADC_DMA_Single_Channel_init(ADC_Single_Channel_Info* pch)
+ * 功能：ADC采用DMA单次采样初始化
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果
+ * 输出：无
+ * *******************/
 void ADC_DMA_Single_Channel_init(ADC_Single_Channel_Info* pch)
 {
-    dmaReqAssign(DMA_ADC1_Single_channel, DMA_ADC1_Single_REQUEST_LINE);
-    g_dmaCTRLPKT_ADC1_Single.SADD      =((uint32_t)(&(adcREG1->GxBUF[ADC1_GROUP_2].BUF0)))  ;
-    g_dmaCTRLPKT_ADC1_Single.DADD      =(uint32)(pch+1) ;
+    uint8 i=0;
+    uint8 CH_num=0;
+    for(i=0;i<32;i++)
+    {
+        if(( 0x0001 << i) &pch->ch)
+        {
+            CH_num++;
+        }
+    }
+    if(pch->source>adcGROUP_2) return;
+    s_adcSelect[0][pch->ADC_group]=pch->ch;
+    ADC_Single_Init(pch->ADC_group,pch->source);
+    dmaReqAssign(DMA_ADC1_Single_channel, DMA_ADC1_Single_REQUEST_LINE[pch->ADC_group]);
+    g_dmaCTRLPKT_ADC1_Single.SADD      =((uint32_t)(&(adcREG1->GxBUF[pch->ADC_group].BUF0)))  ;
+    g_dmaCTRLPKT_ADC1_Single.DADD      =(uint32)(pch->data) ;
     g_dmaCTRLPKT_ADC1_Single.CHCTRL    = 0;
-    g_dmaCTRLPKT_ADC1_Single.FRCNT = ADC1_SINGLE_DATA_LEN;
+    g_dmaCTRLPKT_ADC1_Single.FRCNT = CH_num;
     g_dmaCTRLPKT_ADC1_Single.ELCNT = 1;
     g_dmaCTRLPKT_ADC1_Single.ELDOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Single.ELSOFFSET = 0;
-    g_dmaCTRLPKT_ADC1_Single.FRDOFFSET = 1;
+    g_dmaCTRLPKT_ADC1_Single.FRDOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Single.FRSOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Single.PORTASGN  = PORTB_READ_PORTA_WRITE;
     g_dmaCTRLPKT_ADC1_Single.RDSIZE    = ACCESS_32_BIT;
@@ -283,22 +327,58 @@ void ADC_DMA_Single_Channel_init(ADC_Single_Channel_Info* pch)
     g_dmaCTRLPKT_ADC1_Single.ADDMODEWR = ADDR_INC1;
     g_dmaCTRLPKT_ADC1_Single.AUTOINIT  = AUTOINIT_OFF;
     dmaSetCtrlPacket(DMA_ADC1_Single_channel,g_dmaCTRLPKT_ADC1_Single);
-    adcREG1->G1RAMADDR |=0x00000001;
+    switch(pch->ADC_group)
+    {
+     case adcGROUP_EVENT:
+         adcREG1->EVDMACR |=(0x0000000F);
+     break;
+     case adcGROUP_1:
+         adcREG1->G1DMACR |=(0x00000001 | (CH_num << 16));
+     break;
+     case adcGROUP_2:
+         adcREG1->G2DMACR |=(0x0000000F);
+     break;
 
+    }
 }
 
-void ADC_DMA_Continues_Channel_init(ADC_Continues_Channel_Info pch)
+/******************
+ * 函数：void ADC_DMA_Continues_Channel_init(ADC_Continues_Channel_Info * pch)
+ * 功能：ADC采用DMA连续采样初始化
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果。data[0][]--保存第1次采样；data[1][]--保存第2次采样；
+ * 输出：无
+ * 注意：使用此函数时，应在ADC.h中修改ADC_CONTINUE_SDATA_Num 和 define ADC_CONTINUE_SOURCE_Num 的值。
+ *     ADC_CONTINUE_SDATA_Num--连续采集的次数；define ADC_CONTINUE_SOURCE_Num--采集通道的个数。
+ * *******************/
+void ADC_DMA_Continues_Channel_init(ADC_Continues_Channel_Info * pch)
 {
-
-    dmaReqAssign(DMA_ADC1_Continues_channel, DMA_ADC1_Continues_REQUEST_LINE);
-    g_dmaCTRLPKT_ADC1_Continues.SADD      =((uint32_t)(&(adcREG1->GxBUF[ADC1_GROUP_1].BUF0)))  ;
-    g_dmaCTRLPKT_ADC1_Continues.DADD      =(uint32)(pch.data) ;
+    uint8 i=0;
+    uint8 CH_num=0;
+    for(i=0;i<32;i++)
+    {
+        if(( 0x0001 << i) &pch->chs)
+        {
+            CH_num++;
+        }
+    }
+    if(pch->source>adcGROUP_2) return;
+    s_adcSelect[0][pch->ADC_group]=pch->chs;
+    ADC_Continuous_Init(pch->ADC_group,pch->source);
+    dmaReqAssign(DMA_ADC1_Continues_channel, DMA_ADC1_Continues_REQUEST_LINE[pch->ADC_group]);
+    g_dmaCTRLPKT_ADC1_Continues.SADD      =((uint32_t)(&(adcREG1->GxBUF[pch->ADC_group].BUF0)))  ;
+    g_dmaCTRLPKT_ADC1_Continues.DADD      =(uint32)(pch->data) ;
     g_dmaCTRLPKT_ADC1_Continues.CHCTRL    = 0;
-    g_dmaCTRLPKT_ADC1_Continues.FRCNT = ADC1_CONTINUES_DATA_LEN;
+    g_dmaCTRLPKT_ADC1_Continues.FRCNT = (CH_num*ADC_CONTINUE_SDATA_Num);
     g_dmaCTRLPKT_ADC1_Continues.ELCNT = 1;
     g_dmaCTRLPKT_ADC1_Continues.ELDOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Continues.ELSOFFSET = 0;
-    g_dmaCTRLPKT_ADC1_Continues.FRDOFFSET = 1;
+    g_dmaCTRLPKT_ADC1_Continues.FRDOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Continues.FRSOFFSET = 0;
     g_dmaCTRLPKT_ADC1_Continues.PORTASGN  = PORTB_READ_PORTA_WRITE;
     g_dmaCTRLPKT_ADC1_Continues.RDSIZE    = ACCESS_32_BIT;
@@ -308,40 +388,96 @@ void ADC_DMA_Continues_Channel_init(ADC_Continues_Channel_Info pch)
     g_dmaCTRLPKT_ADC1_Continues.ADDMODEWR = ADDR_INC1;
     g_dmaCTRLPKT_ADC1_Continues.AUTOINIT  = AUTOINIT_ON;
     dmaSetCtrlPacket(DMA_ADC1_Continues_channel,g_dmaCTRLPKT_ADC1_Continues);
-    adcREG1->G2RAMADDR |=0x00000001;
- //   dmaSetChEnable(DMA_ADC1_channel, DMA_HW);
- //   dmaEnableInterrupt(DMA_ADC1_channel, BTC, DMA_INTA);
+    switch(pch->ADC_group)
+    {
+     case adcGROUP_EVENT:
+         adcREG1->EVDMACR |=(0x0000000F);
+     break;
+     case adcGROUP_1:
+         adcREG1->G1DMACR |=(0x00000001 | (CH_num << 16));
+     break;
+     case adcGROUP_2:
+         adcREG1->G2DMACR |=(0x0000000F);
+     break;
+
+    }
 
 }
-
-void ADC_Continues_start(void )
+/******************
+ * 函数：void ADC_Continues_start(ADC_Continues_Channel_Info* pch)
+ * 功能：ADC连续采样开始
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果。data[0][]--保存第1次采样；data[1][]--保存第2次采样；
+ * 输出：无
+ * 注意：使用此函数时，应在ADC.h中修改ADC_CONTINUE_SDATA_Num 和 define ADC_CONTINUE_SOURCE_Num 的值。
+ *     ADC_CONTINUE_SDATA_Num--连续采集的次数；define ADC_CONTINUE_SOURCE_Num--采集通道的个数。
+ * *******************/
+void ADC_Continues_start(ADC_Continues_Channel_Info* pch)
 {
-    adcREG1->GxINTCR[ADC1_GROUP_1] = ADCFIFOSIZE;
-    adcREG1->GxSEL[ADC1_GROUP_1] = ADCChanelNum;
-
+    adcREG1->GxINTCR[pch->ADC_group] = 16;
+    adcREG1->GxSEL[pch->ADC_group] = s_adcSelect[0][pch->ADC_group];;
     dmaSetChEnable(DMA_ADC1_Continues_channel, DMA_HW);
 
 }
-
-void ADC_Continues_stop(void )
+/******************
+ * 函数：void ADC_Continues_stop(ADC_Continues_Channel_Info* pch )
+ * 功能：ADC连续采样结束
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果。data[0][]--保存第1次采样；data[1][]--保存第2次采样；
+ * 输出：无
+ * 注意：使用此函数时，应在ADC.h中修改ADC_CONTINUE_SDATA_Num 和 define ADC_CONTINUE_SOURCE_Num 的值。
+ *     ADC_CONTINUE_SDATA_Num--连续采集的次数；define ADC_CONTINUE_SOURCE_Num--采集通道的个数。
+ * *******************/
+void ADC_Continues_stop(ADC_Continues_Channel_Info* pch )
 {
-    adcREG1->GxSEL[ADC1_GROUP_1] = 0U;
+    adcREG1->GxSEL[pch->ADC_group] = 0U;
 
 }
-
+/******************
+ * 函数：void ADC_Single_start(ADC_Single_Channel_Info* pch)
+ * 功能：ADC单次采样开始
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果。
+ * 输出：无
+ * *******************/
 void ADC_Single_start(ADC_Single_Channel_Info* pch)
 {
-    adcREG1->GxINTCR[ADC1_GROUP_2] = ADCFIFOSIZE;
-    adcREG1->GxSEL[ADC1_GROUP_2] = ADCChanelNum;
-
+    adcREG1->GxINTCR[pch->ADC_group] = 16;
+    adcREG1->GxSEL[pch->ADC_group] = s_adcSelect[0][pch->ADC_group];
     dmaSetChEnable(DMA_ADC1_Single_channel, DMA_HW);
 }
-
-uint8 ADC_Single_isfinish()
+/******************
+ * 函数：uint8 ADC_Single_isfinish(ADC_Single_Channel_Info* pch)
+ * 功能：查询ADC单次采样是否结束
+ * 输入：pch：配置参数句柄。->ADC_group:采用的组别；可选：adcGROUP_EVENT、adcGROUP_1、adcGROUP_2。
+ *                    ->ch：采集的通道参数；第0~31位分别对应了0~31通道，置1则启用。
+ *                    ->source：采样的输入源；可选：ADC_EVENT 、ADC_HET1_8、ADC_HET1_10、ADC_RTI_COMP0、ADC_HET1_12 、
+                             ADC_HET1_14、ADC_GIOB0、ADC_GIOB1、ADC_HET2_5、ADC_HET1_27、ADC_HET1_17
+                             ADC_HET1_19、ADC_HET1_11、ADC_HET2_13、ADC_EPWM_B、ADC_EPWM_A1、ADC_HET2_1
+                             ADC_EPWM_A2、ADC_EPWM_AB
+                       ->data：保存采集结果。
+ * 输出：返回单次采样是否结束结果；CONVERSION_COMPLETE--完成；CONVERSION_NO_FINISHED--没有完成
+ * *******************/
+uint8 ADC_Single_isfinish(ADC_Single_Channel_Info* pch)
 {
     uint32 result=0;
-    result= adcREG1->GxINTFLG[ADC1_GROUP_2] & 8U;
-    if(result==8)
+    result= adcREG1->GxINTFLG[pch->ADC_group] & 8U;
+    if(result!=0)
     {
         return CONVERSION_COMPLETE;
     }

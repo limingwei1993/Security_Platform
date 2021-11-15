@@ -24,12 +24,12 @@
 #define DMA_SPI1_TRANSMIT_REQUEST_LINE  DMA_REQ1
 #define DMA_SPI2_REVICE_REQUEST_LINE    DMA_REQ2
 #define DMA_SPI2_TRANSMIT_REQUEST_LINE  DMA_REQ3
-#define DMA_SPI3_REVICE_REQUEST_LINE    DMA_REQ12
-#define DMA_SPI3_TRANSMIT_REQUEST_LINE  DMA_REQ13
-#define DMA_SPI4_REVICE_REQUEST_LINE   DMA_REQ34
-#define DMA_SPI4_TRANSMIT_REQUEST_LINE  DMA_REQ35
-#define DMA_SPI5_REVICE_REQUEST_LINE   DMA_REQ24
-#define DMA_SPI5_TRANSMIT_REQUEST_LINE  DMA_REQ25
+#define DMA_SPI3_REVICE_REQUEST_LINE    DMA_REQ14
+#define DMA_SPI3_TRANSMIT_REQUEST_LINE  DMA_REQ15
+#define DMA_SPI4_REVICE_REQUEST_LINE   DMA_REQ24
+#define DMA_SPI4_TRANSMIT_REQUEST_LINE  DMA_REQ25
+#define DMA_SPI5_REVICE_REQUEST_LINE   DMA_REQ30
+#define DMA_SPI5_TRANSMIT_REQUEST_LINE  DMA_REQ31
 #define DMA_SPI1_channel    0
 #define DMA_SPI2_channel    1
 #define DMA_SPI3_channel    2
@@ -47,7 +47,7 @@
 #define SPI4_revice_SIZE  (16U)
 #define SPI5_send_SIZE  (16U)
 #define SPI5_revice_SIZE  (16U)
-enum SPI_NUM
+enum SPI_NUM  /*spi 编号 */
 {
     SPI1=1,
     SPI2=2,
@@ -55,12 +55,12 @@ enum SPI_NUM
     SPI4=4,
     SPI5=5,
 };
-enum SPI_MODE
+enum SPI_MODE /*spi 主从模式 */
 {
     SPI_SLAVEL=0,
     SPI_MASTER=1,
 };
-typedef struct _SPI_INFO
+typedef struct _SPI_INFO /*spi 参数 */
 {
     uint8_t ch;  /*SPI channel*/
     uint32 burt; /*Baud rate*/
@@ -68,7 +68,7 @@ typedef struct _SPI_INFO
     uint8 CPOL;  /*Clock polarity*/
     uint8 mode;  /*Master or slaveL*/
 } SPI_Info;
-
+/*spi 接收数据队列参数 */
 typedef struct _SPIData {
     uint8_t head;
     uint8_t tail;

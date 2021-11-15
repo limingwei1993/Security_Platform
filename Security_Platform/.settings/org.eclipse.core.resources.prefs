@@ -85,3 +85,4 @@ encoding//Debug/makefile=UTF-8
 encoding//Debug/objects.mk=UTF-8
 encoding//Debug/sources.mk=UTF-8
 encoding//communication/ETH.h=UTF-8
+encoding//communication/FlexRay.c=UTF-8

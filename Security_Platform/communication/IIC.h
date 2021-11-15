@@ -30,19 +30,19 @@
 
 #define IIC1_SLAVE_ADD  0x48
 #define IIC2_SLAVE_ADD  0x48
-enum IIc_NUM
+enum IIc_NUM  /*IIC 编号*/
 {
     IIC1=1,
     IIC2=2,
 };
-typedef struct _IIC_INFO
+typedef struct _IIC_INFO /*IIC 参数*/
 {
     uint8_t ch;  /*SPI channel*/
     uint32 ticks; /**/
 
 } IIC_Info;
 
-static struct g_i2cTransfer
+static struct g_i2cTransfer /*IIC 数据配置参数*/
 {
     uint32  mode;
     uint32  length;

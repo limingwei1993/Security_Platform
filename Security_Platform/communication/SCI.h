@@ -44,14 +44,14 @@
 #define SCI_SET_TX_DMA      (1<<16U)
 #define SCI_SET_RX_DMA      (1<<17U)
 #define SCI_SET_RX_DMA_ALL      (1<<18U)
-enum SCII_NUM
+enum SCII_NUM  /*sci编号*/
 {
     SCI1=1,
     SCI2=2,
     SCI3=3,
     SCI4=4,
 };
-typedef struct _SCI_INFO
+typedef struct _SCI_INFO  /*sci参数*/
 {
     uint8_t ch;  /*SPI channel*/
     uint32 burt; /*Baud rate*/
@@ -61,7 +61,7 @@ typedef struct _SCI_INFO
 
 } SCI_Info;
 
-typedef struct
+typedef struct  /*sci接收数据队列参数*/
 {
   /*Receive data byte queue */
   uint16_t head;

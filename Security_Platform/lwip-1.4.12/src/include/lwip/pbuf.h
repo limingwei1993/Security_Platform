@@ -41,8 +41,8 @@ extern "C" {
 #endif
 
 /** Currently, the pbuf_custom code is only needed for one specific configuration
- * of ip_frag_EMAC */
-#define LWIP_SUPPORT_CUSTOM_PBUF (ip_frag_EMAC && !IP_FRAG_USES_STATIC_BUF && !LWIP_NETIF_TX_SINGLE_PBUF)
+ * of ip_frag */
+#define LWIP_SUPPORT_CUSTOM_PBUF (ip_frag && !IP_FRAG_USES_STATIC_BUF && !LWIP_NETIF_TX_SINGLE_PBUF)
 
 #define PBUF_TRANSPORT_HLEN 20
 #define PBUF_IP_HLEN        20

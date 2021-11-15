@@ -123,7 +123,7 @@ void dhcp_inform_EMAC(struct netif *netif);
 void dhcp_network_changed_EMAC(struct netif *netif);
 
 /** if enabled, check whether the offered IP address is not in use, using ARP */
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
 void dhcp_arp_reply(struct netif *netif, ip_addr_t *addr);
 #endif
 

@@ -11,20 +11,27 @@
 #include "HL_reg_dma.h"
 #include "HL_sys_dma.h"
 
-uint8 IIC1_RX_DATA[IIC1_RX_DATA_LEN];
-uint8 IIC2_RX_DATA[IIC2_RX_DATA_LEN];
-uint8 IIC1_TX_DATA[IIC1_TX_DATA_LEN];
-uint8 IIC2_TX_DATA[IIC2_TX_DATA_LEN];
+uint8 IIC1_RX_DATA[IIC1_RX_DATA_LEN]; /*IIC1 接收数据队列*/
+uint8 IIC2_RX_DATA[IIC2_RX_DATA_LEN]; /*IIC2 接收数据队列*/
+uint8 IIC1_TX_DATA[IIC1_TX_DATA_LEN]; /*IIC1 发送数据队列*/
+uint8 IIC2_TX_DATA[IIC2_TX_DATA_LEN]; /*IIC2 发送数据队列*/
 
-bool DMA_IIC1_TX=true;
-bool DMA_IIC2_TX=false;
-bool DMA_IIC1_RX=true;
-bool DMA_IIC2_RX=true;
+bool DMA_IIC1_TX=true;  /*IIC1 发送数据启用DMA标志*/
+bool DMA_IIC2_TX=false; /*IIC2 发送数据启用DMA标志*/
+bool DMA_IIC1_RX=true;  /*IIC1 接收数据启用DMA标志*/
+bool DMA_IIC2_RX=true;  /*IIC2 接收数据启用DMA标志*/
 
 g_dmaCTRL g_dmaCTRLPKT_IIC1_TX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_IIC1_RX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_IIC2_TX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_IIC2_RX;             /* dma control packet configuration stack */
+/******************
+ * 函数：void IIC_init(IIC_Info iicx)
+ * 功能：IIC 初始化
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ * 输出：无
+ * *******************/
 void IIC_init(IIC_Info iicx)
 {
     uint32 prescale;
@@ -214,7 +221,13 @@ void IIC_init(IIC_Info iicx)
     }
 }
 
-
+/******************
+ * 函数：void ICC_DMA_init(IIC_Info iicx)
+ * 功能：IIC DMA初始化
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ * 输出：无
+ * *******************/
 void ICC_DMA_init(IIC_Info iicx)
 {
 
@@ -320,7 +333,16 @@ void ICC_DMA_init(IIC_Info iicx)
     }
 
 }
-
+/******************
+ * 函数：void IIC_ADD8_write(IIC_Info iicx, uint8 addr, uint8* buff, uint32 len)
+ * 功能：IIC 8位地址发送数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：发送数据地址。
+ *      buff：发送的数据。
+ *      len：发送的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD8_write(IIC_Info iicx, uint8 addr, uint8* buff, uint32 len)
 {
     uint32 i=0;
@@ -404,7 +426,16 @@ void IIC_ADD8_write(IIC_Info iicx, uint8 addr, uint8* buff, uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：void IIC_ADD16_write(IIC_Info iicx, uint16 addr, uint8* buff, uint32 len)
+ * 功能：IIC 16位地址发送数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：发送数据地址。
+ *      buff：发送的数据。
+ *      len：发送的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD16_write(IIC_Info iicx, uint16 addr, uint8* buff, uint32 len)
 {
     uint32 i=0;
@@ -492,7 +523,16 @@ void IIC_ADD16_write(IIC_Info iicx, uint16 addr, uint8* buff, uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：void IIC_ADD32_write(IIC_Info iicx, uint16 addr, uint8* buff, uint32 len)
+ * 功能：IIC 32位地址发送数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：发送数据地址。
+ *      buff：发送的数据。
+ *      len：发送的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD32_write(IIC_Info iicx, uint32 addr, uint8* buff, uint32 len)
 {
     uint32 i=0;
@@ -588,7 +628,16 @@ void IIC_ADD32_write(IIC_Info iicx, uint32 addr, uint8* buff, uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：void IIC_ADD8_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len)
+ * 功能：IIC 8位地址读取数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：读取数据的地址。
+ *      buff：保存读取的数据。
+ *      len：读取的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD8_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len)
 {
 
@@ -790,7 +839,16 @@ void IIC_ADD8_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：void IIC_ADD16_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len)
+ * 功能：IIC 16位地址读取数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：读取数据的地址。
+ *      buff：保存读取的数据。
+ *      len：读取的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD16_read(IIC_Info iicx, uint16 addr, uint8* buff,uint32 len)
 {
 
@@ -996,7 +1054,16 @@ void IIC_ADD16_read(IIC_Info iicx, uint16 addr, uint8* buff,uint32 len)
         break;
     }
 }
-
+/******************
+ * 函数：void IIC_ADD32_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len)
+ * 功能：IIC 32位地址读取数据
+ * 输入：iicx：配置参数句柄。->ch：IIC的编号；可选：IIC1、IIC2。
+ *                    ->ticks:速率
+ *      addr：读取数据的地址。
+ *      buff：保存读取的数据。
+ *      len：读取的数据长度。
+ * 输出：无
+ * *******************/
 void IIC_ADD32_read(IIC_Info iicx, uint32 addr, uint8* buff,uint32 len)
 {
 

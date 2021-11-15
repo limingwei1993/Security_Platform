@@ -198,13 +198,13 @@ typedef volatile struct FlexRay_RAM_Base
 #define CMD_MONITOR_MODE                     0xB
 #define CMD_CLEAR_RAMS                       0xC
 #define CMD_ASYNCHRONOUS_TRANSFER_MODE       0xE
-typedef struct _FLEXRAY_INFO
+typedef struct _FLEXRAY_INFO  /*FLEXRAY 参数信息*/
 {
     uint8 ch;
     uint32 burt;
 }FLEXRAY_Info;
 
-typedef struct _FLEXRAY_MCANMESSAGE_BOX
+typedef struct _FLEXRAY_MCANMESSAGE_BOX /*FLEXRAY 发送数据的ID和邮箱关系表信息*/
 {
     uint32 ID; /**/
     uint8_t BOX_num;  /**/
@@ -239,24 +239,24 @@ typedef volatile struct _bc
     int rdss;
     int rhss;
 } bc;
-enum FLEXRAY_NUM
+enum FLEXRAY_NUM  /*FLEXRAY 编号*/
 {
     FLEXRAYA=1,
     FLEXRAYB=2,
 };
-enum FLEXRAY_DIR
+enum FLEXRAY_DIR  /*FLEXRAY 数据传输方向*/
 {
     INPUT=1,
     OUTPUT=2,
 };
-#define FLEXRAY_QUEUEMAX  10
-typedef  struct _FLEXRAY_REVICE_BUFF
+#define FLEXRAY_QUEUEMAX  10  /*FLEXRAY 保存数据队列深度*/
+typedef  struct _FLEXRAY_REVICE_BUFF  /*FLEXRAY 保存每帧数据信息*/
 {
     uint8 len;
     uint32 ID;
     uint32 revice_data[64];
 } FLEXRAY_REVICE_BUFF;
-typedef  struct _FLEXRAY_MSG_BUFF
+typedef  struct _FLEXRAY_MSG_BUFF /*FLEXRAY 保存数据队列信息*/
 {
     uint8 head;
     uint8 tail;

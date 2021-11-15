@@ -206,7 +206,7 @@ void stats_init(void);
 
 #if IPFRAG_STATS
 #define IPFRAG_STATS_INC(x) STATS_INC(x)
-#define IPFRAG_STATS_DISPLAY() stats_display_proto(&lwip_stats.ip_frag_EMAC, "ip_frag_EMAC")
+#define IPFRAG_STATS_DISPLAY() stats_display_proto(&lwip_stats.ip_frag, "ip_frag")
 #else
 #define IPFRAG_STATS_INC(x)
 #define IPFRAG_STATS_DISPLAY()

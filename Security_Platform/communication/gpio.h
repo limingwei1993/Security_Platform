@@ -15,14 +15,14 @@
 #define N2HET2   4
 #define INPUT_IO_NUM 8
 #define OUTPUT_IO_NUM 8
-typedef struct _GIO_INFO
+typedef struct _GIO_INFO /*GIO 口参数*/
 {
     uint32 port;  /**/
     uint32 pin; /**/
 
 } GIO_Info;
 
-typedef enum _IO_STATE
+typedef enum _IO_STATE /*GIO 口状态*/
 {
     IO_LOW=0,
     IO_HIG=1,

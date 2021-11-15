@@ -149,9 +149,9 @@ static u8_t xid_initialised;
 static err_t dhcp_discover(struct netif *netif);
 static err_t dhcp_select(struct netif *netif);
 static void dhcp_bind(struct netif *netif);
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
 static err_t dhcp_decline(struct netif *netif);
-#endif /* DHCP_DOES_ARP_CHECK */
+#endif /* DHCP_DOES_ARP_CHECK_EMAC */
 static err_t dhcp_rebind(struct netif *netif);
 static err_t dhcp_reboot(struct netif *netif);
 static void dhcp_set_state(struct dhcp *dhcp, u8_t new_state);
@@ -211,7 +211,7 @@ dhcp_handle_nak(struct netif *netif)
   dhcp_discover(netif);
 }
 
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
 /**
  * Checks if the offered IP address is already in use.
  *
@@ -241,7 +241,7 @@ dhcp_check(struct netif *netif)
   dhcp->request_timeout = (msecs + DHCP_FINE_TIMER_MSECS - 1) / DHCP_FINE_TIMER_MSECS;
   LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("dhcp_check(): set request timeout %"U16_F" msecs\n", msecs));
 }
-#endif /* DHCP_DOES_ARP_CHECK */
+#endif /* DHCP_DOES_ARP_CHECK_EMAC */
 
 /**
  * Remember the configuration offered by a DHCP server.
@@ -417,7 +417,7 @@ dhcp_timeout(struct netif *netif)
       dhcp_release_EMAC(netif);
       dhcp_discover(netif);
     }
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
   /* received no ARP reply for the offered address (which is good) */
   } else if (dhcp->state == DHCP_CHECKING) {
     LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE | LWIP_DBG_STATE, ("dhcp_timeout(): CHECKING, ARP request timed out\n"));
@@ -429,7 +429,7 @@ dhcp_timeout(struct netif *netif)
       /* bind the interface to the offered address */
       dhcp_bind(netif);
     }
-#endif /* DHCP_DOES_ARP_CHECK */
+#endif /* DHCP_DOES_ARP_CHECK_EMAC */
   }
   /* did not get response to renew request? */
   else if (dhcp->state == DHCP_RENEWING) {
@@ -793,7 +793,7 @@ dhcp_network_changed_EMAC(struct netif *netif)
   }
 }
 
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
 /**
  * Match an ARP reply with the offered IP address.
  *
@@ -860,7 +860,7 @@ dhcp_decline(struct netif *netif)
   LWIP_DEBUGF(DHCP_DEBUG | LWIP_DBG_TRACE, ("dhcp_decline(): set request timeout %"U16_F" msecs\n", msecs));
   return result;
 }
-#endif /* DHCP_DOES_ARP_CHECK */
+#endif /* DHCP_DOES_ARP_CHECK_EMAC */
 
 
 /**
@@ -1598,7 +1598,7 @@ dhcp_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, ip_addr_t *addr, u16_t
     /* in requesting state? */
     if (dhcp->state == DHCP_REQUESTING) {
       dhcp_handle_ack(netif);
-#if DHCP_DOES_ARP_CHECK
+#if DHCP_DOES_ARP_CHECK_EMAC
       /* check if the acknowledged lease address is already in use */
       dhcp_check(netif);
 #else

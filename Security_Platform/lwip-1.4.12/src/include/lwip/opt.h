@@ -520,19 +520,19 @@
 /**
  * IP_REASSEMBLY==1: Reassemble incoming fragmented IP packets. Note that
  * this option does not affect outgoing packet sizes, which can be controlled
- * via ip_frag_EMAC.
+ * via ip_frag.
  */
 #ifndef IP_REASSEMBLY
 #define IP_REASSEMBLY                   1
 #endif
 
 /**
- * ip_frag_EMAC==1: Fragment outgoing IP packets if their size exceeds MTU. Note
+ * ip_frag==1: Fragment outgoing IP packets if their size exceeds MTU. Note
  * that this option does not affect incoming packet sizes, which can be
  * controlled via IP_REASSEMBLY.
  */
-#ifndef ip_frag_EMAC
-#define ip_frag_EMAC                         1
+#ifndef ip_frag
+#define ip_frag                         1
 #endif
 
 /**
@@ -1545,7 +1545,7 @@
  * on if using either frag or reass.
  */
 #ifndef IPFRAG_STATS
-#define IPFRAG_STATS                    (IP_REASSEMBLY || ip_frag_EMAC)
+#define IPFRAG_STATS                    (IP_REASSEMBLY || ip_frag)
 #endif
 
 /**
@@ -1962,7 +1962,7 @@
 #endif
 
 /**
- * IP_REASS_DEBUG: Enable debugging in ip_frag_EMAC.c for both frag & reass.
+ * IP_REASS_DEBUG: Enable debugging in ip_frag.c for both frag & reass.
  */
 #ifndef IP_REASS_DEBUG
 #define IP_REASS_DEBUG                  LWIP_DBG_OFF

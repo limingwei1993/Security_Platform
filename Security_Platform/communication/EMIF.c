@@ -8,6 +8,12 @@
 #include "HL_reg_emif.h"
 #include "HL_pinmux.h"
 #include "HL_reg_pinmux.h"
+/******************
+ * 函数：void EMIF_IO_Configure(void)
+ * 功能：EMIF的I/O口配置
+ * 输入：：无。
+ * 输出：  无。
+ * *******************/
 void EMIF_IO_Configure(void)
 {
 
@@ -37,7 +43,12 @@ void EMIF_IO_Configure(void)
         pinMuxReg->KICKER1 = 0x00000000U;
 
 }
-
+/******************
+ * 函数：void EMIF_init(void)
+ * 功能：EMIF初始化
+ * 输入：：无。
+ * 输出：  无。
+ * *******************/
 void EMIF_init(void)
 {
         volatile uint32 buffer;
@@ -91,7 +102,14 @@ void EMIF_init(void)
         /* The byte address depends on endian (0x3U in LE, 0x00 in BE32) */
            *((unsigned char *)(&emifREG->SDCR) + 0x0U) = 0x80U;
 }
-
+/******************
+ * 函数：void EMIF_write(uint32 write_addr,uint8 *write_buff,uint32 write_len)
+ * 功能：EMIF写数据
+ * 输入：：write_addr：写数据的地址。
+ *       write_buff：数据
+ *       write_len：数据长度
+ * 输出：  无。
+ * *******************/
 void EMIF_write(uint32 write_addr,uint8 *write_buff,uint32 write_len)
 {
    uint8* DATA_ADDR=(uint8 *)(EMIF_BASE_ADDRESS)+write_addr;
@@ -103,7 +121,14 @@ void EMIF_write(uint32 write_addr,uint8 *write_buff,uint32 write_len)
    }
 
 }
-
+/******************
+ * 函数：void EMIF_read(uint32 read_addr,uint8 * read_buff,uint32 read_len)
+ * 功能：EMIF读数据
+ * 输入：：read_addr：读取数据的地址。
+ *       read_buff：保存读取到的数据
+ *       read_len：要读的数据长度
+ * 输出：  无。
+ * *******************/
 void EMIF_read(uint32 read_addr,uint8 * read_buff,uint32 read_len)
 {
    uint8* DATA_ADDR=(uint8 *)(EMIF_BASE_ADDRESS)+read_addr;

@@ -818,13 +818,13 @@ etharp_arp_input(struct netif *netif, struct eth_addr *ethaddr, struct pbuf *p)
   case PP_HTONS(ARP_REPLY):
     /* ARP reply. We already updated the ARP cache earlier. */
     LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: incoming ARP reply\n"));
-#if (LWIP_DHCP && DHCP_DOES_ARP_CHECK)
+#if (LWIP_DHCP && DHCP_DOES_ARP_CHECK_EMAC)
     /* DHCP wants to know about ARP replies from any host with an
      * IP address also offered to us by the DHCP server. We do not
      * want to take a duplicate IP address on a single network.
      * @todo How should we handle redundant (fail-over) interfaces? */
     dhcp_arp_reply(netif, &sipaddr);
-#endif /* (LWIP_DHCP && DHCP_DOES_ARP_CHECK) */
+#endif /* (LWIP_DHCP && DHCP_DOES_ARP_CHECK_EMAC) */
     break;
   default:
     LWIP_DEBUGF(ETHARP_DEBUG | LWIP_DBG_TRACE, ("etharp_arp_input: ARP unknown opcode type %"S16_F"\n", htons(hdr->opcode)));

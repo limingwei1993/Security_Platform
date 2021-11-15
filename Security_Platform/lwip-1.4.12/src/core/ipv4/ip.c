@@ -268,11 +268,11 @@ ip_forward(struct pbuf *p, struct ip_hdr *iphdr, struct netif *inp)
   /* don't fragment if interface has mtu set to 0 [loopif] */
   if (netif->mtu && (p->tot_len > netif->mtu)) {
     if ((IPH_OFFSET(iphdr) & PP_NTOHS(IP_DF)) == 0) {
-#if ip_frag_EMAC
+#if ip_frag
       ip_frag_EMAC(p, netif, ip_current_dest_addr());
-#else /* ip_frag_EMAC */
+#else /* ip_frag */
       /* @todo: send ICMP Destination Unreacheable code 13 "Communication administratively prohibited"? */
-#endif /* ip_frag_EMAC */
+#endif /* ip_frag */
     } else {
       /* send ICMP Destination Unreacheable code 4: "Fragmentation Needed and DF Set" */
       icmp_dest_unreach_EMAC(p, ICMP_DUR_FRAG);
@@ -786,12 +786,12 @@ err_t ip_output_if_opt(struct pbuf *p, ip_addr_t *src, ip_addr_t *dest,
   }
 #endif /* LWIP_IGMP */
 #endif /* ENABLE_LOOPBACK */
-#if ip_frag_EMAC
+#if ip_frag
   /* don't fragment if interface has mtu set to 0 [loopif] */
   if (netif->mtu && (p->tot_len > netif->mtu)) {
     return ip_frag_EMAC(p, netif, dest);
   }
-#endif /* ip_frag_EMAC */
+#endif /* ip_frag */
 
   LWIP_DEBUGF(IP_DEBUG, ("netif->output()"));
   return netif->output(netif, p, dest);

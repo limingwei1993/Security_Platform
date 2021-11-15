@@ -14,46 +14,36 @@
 #include "HL_sys_vim.h"
 #include "HL_reg_dma.h"
 #include "HL_sys_dma.h"
-SPI_revice_buff SPI1_MSG_buff;
-SPI_revice_buff SPI2_MSG_buff;
-SPI_revice_buff SPI3_MSG_buff;
-SPI_revice_buff SPI4_MSG_buff;
-SPI_revice_buff SPI5_MSG_buff;
-#define DMA_SPI1_CHANNEL DMA_CH4
-#define DMA_SPI2_CHANNEL DMA_CH5
-#define DMA_SPI3_CHANNEL DMA_CH6
-#define DMA_SPI4_CHANNEL DMA_CH7
-#define DMA_SPI5_CHANNEL DMA_CH8
-#define DMA_SPI1_REVICE_REQUEST_LINE    DMA_REQ0
-#define DMA_SPI1_TRANSMIT_REQUEST_LINE  DMA_REQ1
-#define DMA_SPI2_REVICE_REQUEST_LINE    DMA_REQ2
-#define DMA_SPI2_TRANSMIT_REQUEST_LINE  DMA_REQ3
-#define DMA_SPI3_REVICE_REQUEST_LINE    DMA_REQ12
-#define DMA_SPI3_TRANSMIT_REQUEST_LINE  DMA_REQ13
-#define DMA_SPI4_REVICE_REQUEST_LINE    DMA_REQ34
-#define DMA_SPI4_TRANSMIT_REQUEST_LINE  DMA_REQ35
-#define DMA_SPI5_REVICE_REQUEST_LINE    DMA_REQ24
-#define DMA_SPI6_TRANSMIT_REQUEST_LINE  DMA_REQ25
-bool DMA_SPI1_TX=true;
-bool DMA_SPI2_TX=false;
-bool DMA_SPI3_TX=false;
-bool DMA_SPI4_TX=false;
-bool DMA_SPI5_TX=false;
-bool DMA_SPI1_RX=true;
-bool DMA_SPI2_RX=true;
-bool DMA_SPI3_RX=true;
-bool DMA_SPI4_RX=true;
-bool DMA_SPI5_RX=true;
-uint16 SPI1_TX_DATA[SPI1_send_SIZE];
-uint16 SPI1_RX_DATA[SPI1_revice_SIZE];
-uint16 SPI2_TX_DATA[SPI2_send_SIZE];
-uint16 SPI2_RX_DATA[SPI2_revice_SIZE];
-uint16 SPI3_TX_DATA[SPI3_send_SIZE];
-uint16 SPI3_RX_DATA[SPI3_revice_SIZE];
-uint16 SPI4_TX_DATA[SPI4_send_SIZE];
-uint16 SPI4_RX_DATA[SPI4_revice_SIZE];
-uint16 SPI5_TX_DATA[SPI5_send_SIZE];
-uint16 SPI5_RX_DATA[SPI5_revice_SIZE];
+SPI_revice_buff SPI1_MSG_buff;      /*SPI1 接收数据队列*/
+SPI_revice_buff SPI2_MSG_buff;      /*SPI2 接收数据队列*/
+SPI_revice_buff SPI3_MSG_buff;      /*SPI3 接收数据队列*/
+SPI_revice_buff SPI4_MSG_buff;      /*SPI4 接收数据队列*/
+SPI_revice_buff SPI5_MSG_buff;      /*SPI5 接收数据队列*/
+#define DMA_SPI1_CHANNEL DMA_CH4    /*SPI1 DMA中断通道编号*/
+#define DMA_SPI2_CHANNEL DMA_CH5    /*SPI2 DMA中断通道编号*/
+#define DMA_SPI3_CHANNEL DMA_CH6    /*SPI3 DMA中断通道编号*/
+#define DMA_SPI4_CHANNEL DMA_CH7    /*SPI4 DMA中断通道编号*/
+#define DMA_SPI5_CHANNEL DMA_CH8    /*SPI5 DMA中断通道编号*/
+bool DMA_SPI1_TX=false;     /*SPI1 启用DMA发送标志*/
+bool DMA_SPI2_TX=false;     /*SPI2 启用DMA发送标志*/
+bool DMA_SPI3_TX=false;     /*SPI3 启用DMA发送标志*/
+bool DMA_SPI4_TX=false;     /*SPI4 启用DMA发送标志*/
+bool DMA_SPI5_TX=true;      /*SPI5 启用DMA发送标志*/
+bool DMA_SPI1_RX=true;      /*SPI1 启用DMA接收标志*/
+bool DMA_SPI2_RX=true;      /*SPI2 启用DMA接收标志*/
+bool DMA_SPI3_RX=true;      /*SPI3 启用DMA接收标志*/
+bool DMA_SPI4_RX=true;      /*SPI4 启用DMA接收标志*/
+bool DMA_SPI5_RX=true;      /*SPI5 启用DMA接收标志*/
+uint8 SPI1_TX_DATA[SPI1_send_SIZE];         /*SPI1 DMA发送数据队列*/
+uint8 SPI1_RX_DATA[SPI1_revice_SIZE];       /*SPI1 DMA接收数据队列*/
+uint8 SPI2_TX_DATA[SPI2_send_SIZE];         /*SPI2 DMA发送数据队列*/
+uint8 SPI2_RX_DATA[SPI2_revice_SIZE];       /*SPI2 DMA接收数据队列*/
+uint8 SPI3_TX_DATA[SPI3_send_SIZE];         /*SPI3 DMA发送数据队列*/
+uint8 SPI3_RX_DATA[SPI3_revice_SIZE];       /*SPI3 DMA接收数据队列*/
+uint8 SPI4_TX_DATA[SPI4_send_SIZE];         /*SPI3 DMA发送数据队列*/
+uint8 SPI4_RX_DATA[SPI4_revice_SIZE];       /*SPI4 DMA接收数据队列*/
+uint8 SPI5_TX_DATA[SPI5_send_SIZE];         /*SPI4 DMA发送数据队列*/
+uint8 SPI5_RX_DATA[SPI5_revice_SIZE];       /*SPI5 DMA接收数据队列*/
 g_dmaCTRL g_dmaCTRLPKT_SPI1_TX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SPI1_RX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SPI2_TX;             /* dma control packet configuration stack */
@@ -64,6 +54,16 @@ g_dmaCTRL g_dmaCTRLPKT_SPI4_TX;             /* dma control packet configuration 
 g_dmaCTRL g_dmaCTRLPKT_SPI4_RX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SPI5_TX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SPI5_RX;             /* dma control packet configuration stack */
+/******************
+ * 函数：void SPI_init(SPI_Info spix)
+ * 功能：SPI 初始化
+ * 输入：spix ： 参数信息。 ->ch：SCI编号；可选SPI1、SPI2、SPI3、SPI4.
+ *                    ->CPHA：时钟相位。
+ *                    ->CPOL：时钟极性。
+ *                    ->mode：主从模式。可选： SPI_SLAVEL、SPI_MASTER
+ *                    ->burt：波特率。
+ * 输出：无
+ * *******************/
 void SPI_init(SPI_Info spix)
 {
 
@@ -1002,7 +1002,18 @@ void SPI_init(SPI_Info spix)
     }
 }
 
-
+/******************
+ * 函数：void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
+ * 功能：SPI 主模式发送数据
+ * 输入：spix ： 参数信息。 ->ch：SCI编号；可选SPI1、SPI2、SPI3、SPI4.
+ *                    ->CPHA：时钟相位。
+ *                    ->CPOL：时钟极性。
+ *                    ->mode：主从模式。可选： SPI_SLAVEL、SPI_MASTER
+ *                    ->burt：波特率。
+ *     buff：发送的数据。
+ *     len：发送的数据长度。
+ * 输出：无
+ * *******************/
 
 void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
 {
@@ -1024,12 +1035,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG1->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
-
                    spiREG1->DAT1 =  ((uint32)0 << 24U) |
                                 ((uint32)0 << 16U) |
                                 (0)           |
@@ -1038,7 +1044,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG1->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG1->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG1->BUF;
@@ -1062,10 +1068,6 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG2->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG2->DAT1 =  ((uint32)0 << 24U) |
@@ -1076,7 +1078,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG2->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG2->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG2->BUF;
@@ -1100,10 +1102,6 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG3->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG3->DAT1 =  ((uint32)0 << 24U) |
@@ -1114,7 +1112,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG3->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG3->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG3->BUF;
@@ -1138,10 +1136,6 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG4->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG4->DAT1 =  ((uint32)0 << 24U) |
@@ -1152,7 +1146,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG4->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG4->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG4->BUF;
@@ -1176,10 +1170,6 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG5->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG5->DAT1 =  ((uint32)0 << 24U) |
@@ -1190,7 +1180,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG5->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG5->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG5->BUF;
@@ -1204,7 +1194,18 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
     }
 
 }
-
+/******************
+ * 函数：void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
+ * 功能：SPI 从模式发送数据
+ * 输入：spix ： 参数信息。 ->ch：SCI编号；可选SPI1、SPI2、SPI3、SPI4.
+ *                    ->CPHA：时钟相位。
+ *                    ->CPOL：时钟极性。
+ *                    ->mode：主从模式。可选： SPI_SLAVEL、SPI_MASTER
+ *                    ->burt：波特率。
+ *     buff：发送的数据。
+ *     len：发送的数据长度。
+ * 输出：无
+ * *******************/
 void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
 {
     uint8 i=0;
@@ -1225,10 +1226,6 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG1->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG1->DAT1 =  ((uint32)0 << 24U) |
@@ -1239,7 +1236,7 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG1->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG1->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG1->BUF;
@@ -1263,10 +1260,6 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG2->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG2->DAT1 =  ((uint32)0 << 24U) |
@@ -1277,7 +1270,7 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG2->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG2->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG2->BUF;
@@ -1301,10 +1294,6 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG3->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG3->DAT1 =  ((uint32)0 << 24U) |
@@ -1315,7 +1304,7 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG3->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG3->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG3->BUF;
@@ -1339,10 +1328,6 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG4->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG4->DAT1 =  ((uint32)0 << 24U) |
@@ -1353,7 +1338,7 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG4->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG4->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG4->BUF;
@@ -1377,10 +1362,6 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                uint8 Tx_Data;
                while(len != 0U)
                {
-                   if((spiREG5->FLG & 0x000000FFU) !=0U)
-                   {
-                      break;
-                   }
                    Tx_Data = *buff;
 
                    spiREG5->DAT1 =  ((uint32)0 << 24U) |
@@ -1391,7 +1372,7 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
                    /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
                    buff++;
                    /*SAFETYMCUSW 28 D MR:NA <APPROVED> "Hardware status bit read check" */
-                   while((spiREG5->FLG & 0x00000100U) != 0x00000100U)
+                   while((spiREG5->FLG & 0x00000200U) != 0x00000200U)
                    {
                    } /* Wait */
                    SpiBuf = spiREG5->BUF;
@@ -1405,44 +1386,73 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
     }
 
 }
-
+/******************
+ * 函数：void SPI1_revive(uint8_t  revice_data)
+ * 功能：SPI1 保存接收到的数据
+ * 输入：srevice_data：接收到的数据
+ * 输出：无
+ * *******************/
 
 void SPI1_revive(uint8_t  revice_data)
 {
       SPI1_MSG_buff.revicebuf[SPI1_MSG_buff.tail]=revice_data;
       SPI1_MSG_buff.tail = (SPI1_MSG_buff.tail + 1) % kSPIBuffLen;
 }
-
+/******************
+ * 函数：void SPI2_revive(uint8_t  revice_data)
+ * 功能：SPI2 保存接收到的数据
+ * 输入：srevice_data：接收到的数据
+ * 输出：无
+ * *******************/
 void SPI2_revive(uint8_t  revice_data)
 {
       SPI2_MSG_buff.revicebuf[SPI2_MSG_buff.tail]=revice_data;
       SPI2_MSG_buff.tail = (SPI2_MSG_buff.tail + 1) % kSPIBuffLen;
 }
-
+/******************
+ * 函数：void SPI3_revive(uint8_t  revice_data)
+ * 功能：SPI3 保存接收到的数据
+ * 输入：srevice_data：接收到的数据
+ * 输出：无
+ * *******************/
 void SPI3_revive(uint8_t  revice_data)
 {
       SPI3_MSG_buff.revicebuf[SPI3_MSG_buff.tail]=revice_data;
       SPI3_MSG_buff.tail = (SPI3_MSG_buff.tail + 1) % kSPIBuffLen;
 }
-
+/******************
+ * 函数：void SPI4_revive(uint8_t  revice_data)
+ * 功能：SPI4 保存接收到的数据
+ * 输入：srevice_data：接收到的数据
+ * 输出：无
+ * *******************/
 void SPI4_revive(uint8_t  revice_data)
 {
       SPI4_MSG_buff.revicebuf[SPI4_MSG_buff.tail]=revice_data;
       SPI4_MSG_buff.tail = (SPI4_MSG_buff.tail + 1) % kSPIBuffLen;
 }
-
+/******************
+ * 函数：void SPI5_revive(uint8_t  revice_data)
+ * 功能：SPI5 保存接收到的数据
+ * 输入：srevice_data：接收到的数据
+ * 输出：无
+ * *******************/
 void SPI5_revive(uint8_t  revice_data)
 {
       SPI5_MSG_buff.revicebuf[SPI5_MSG_buff.tail]=revice_data;
       SPI5_MSG_buff.tail = (SPI5_MSG_buff.tail + 1) % kSPIBuffLen;
 }
 
-/*******************************************************************************
-Function:       // mibspidma_Init
-Description:    // Initialization of MIBSPI DMA communication module
-Input:          // none
-Output:         // none
-*******************************************************************************/
+/******************
+ * 函数：void SPI_DMA_init(SPI_Info spix)
+ * 功能：SPI DMA配置
+ * 输入：spix ： 参数信息。 ->ch：SCI编号；可选SPI1、SPI2、SPI3、SPI4.
+ *                    ->CPHA：时钟相位。
+ *                    ->CPOL：时钟极性。
+ *                    ->mode：主从模式。可选： SPI_SLAVEL、SPI_MASTER
+ *                    ->burt：波特率。
+ * 输出：无
+ * *******************/
 void SPI_DMA_init(SPI_Info spix)
 {
 
@@ -1452,7 +1462,7 @@ void SPI_DMA_init(SPI_Info spix)
             while((spiREG1->FLG & 0x00000200U) != 0x00000200U);
             dmaReqAssign(DMA_SPI1_TRANSMIT_channel, DMA_SPI1_TRANSMIT_REQUEST_LINE);
             g_dmaCTRLPKT_SPI1_TX.SADD      = (uint32)(SPI1_TX_DATA) ;
-            g_dmaCTRLPKT_SPI1_TX.DADD      = ((uint32_t)(&(spiREG1->DAT1))+2);
+            g_dmaCTRLPKT_SPI1_TX.DADD      = ((uint32_t)(&(spiREG2->DAT1))+3);
             g_dmaCTRLPKT_SPI1_TX.CHCTRL    = 0;
             g_dmaCTRLPKT_SPI1_TX.FRCNT = SPI1_send_SIZE;
             g_dmaCTRLPKT_SPI1_TX.ELCNT = 1;
@@ -1461,8 +1471,8 @@ void SPI_DMA_init(SPI_Info spix)
             g_dmaCTRLPKT_SPI1_TX.FRDOFFSET = 0;
             g_dmaCTRLPKT_SPI1_TX.FRSOFFSET = 0;
             g_dmaCTRLPKT_SPI1_TX.PORTASGN  = PORTA_READ_PORTB_WRITE;
-            g_dmaCTRLPKT_SPI1_TX.RDSIZE    = ACCESS_16_BIT;
-            g_dmaCTRLPKT_SPI1_TX.WRSIZE    = ACCESS_16_BIT;
+            g_dmaCTRLPKT_SPI1_TX.RDSIZE    = ACCESS_8_BIT;
+            g_dmaCTRLPKT_SPI1_TX.WRSIZE    = ACCESS_8_BIT;
             g_dmaCTRLPKT_SPI1_TX.TTYPE     = FRAME_TRANSFER ;
             g_dmaCTRLPKT_SPI1_TX.ADDMODERD = ADDR_INC1;
             g_dmaCTRLPKT_SPI1_TX.ADDMODEWR = ADDR_FIXED;
@@ -1500,7 +1510,7 @@ void SPI_DMA_init(SPI_Info spix)
            while((spiREG2->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI2_TRANSMIT_channel, DMA_SPI2_TRANSMIT_REQUEST_LINE);
            g_dmaCTRLPKT_SPI2_TX.SADD      = (uint32)(SPI2_TX_DATA) ;
-           g_dmaCTRLPKT_SPI2_TX.DADD      = ((uint32_t)(&(spiREG2->DAT1))+2);
+           g_dmaCTRLPKT_SPI2_TX.DADD      = ((uint32_t)(&(spiREG2->DAT1))+3);
            g_dmaCTRLPKT_SPI2_TX.CHCTRL    = 0;
            g_dmaCTRLPKT_SPI2_TX.FRCNT = SPI2_send_SIZE;
            g_dmaCTRLPKT_SPI2_TX.ELCNT = 1;
@@ -1509,8 +1519,8 @@ void SPI_DMA_init(SPI_Info spix)
            g_dmaCTRLPKT_SPI2_TX.FRDOFFSET = 0;
            g_dmaCTRLPKT_SPI2_TX.FRSOFFSET = 0;
            g_dmaCTRLPKT_SPI2_TX.PORTASGN  = PORTA_READ_PORTB_WRITE;
-           g_dmaCTRLPKT_SPI2_TX.RDSIZE    = ACCESS_16_BIT;
-           g_dmaCTRLPKT_SPI2_TX.WRSIZE    = ACCESS_16_BIT;
+           g_dmaCTRLPKT_SPI2_TX.RDSIZE    = ACCESS_8_BIT;
+           g_dmaCTRLPKT_SPI2_TX.WRSIZE    = ACCESS_8_BIT;
            g_dmaCTRLPKT_SPI2_TX.TTYPE     = FRAME_TRANSFER ;
            g_dmaCTRLPKT_SPI2_TX.ADDMODERD = ADDR_INC1;
            g_dmaCTRLPKT_SPI2_TX.ADDMODEWR = ADDR_FIXED;
@@ -1547,7 +1557,7 @@ void SPI_DMA_init(SPI_Info spix)
            while((spiREG3->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI3_TRANSMIT_channel, DMA_SPI3_TRANSMIT_REQUEST_LINE);
            g_dmaCTRLPKT_SPI3_TX.SADD      = (uint32)(SPI3_TX_DATA) ;
-           g_dmaCTRLPKT_SPI3_TX.DADD      = ((uint32_t)(&(spiREG3->DAT1))+2);
+           g_dmaCTRLPKT_SPI3_TX.DADD      = ((uint32_t)(&(spiREG3->DAT1))+3);
            g_dmaCTRLPKT_SPI3_TX.CHCTRL    = 0;
            g_dmaCTRLPKT_SPI3_TX.FRCNT = SPI3_send_SIZE;
            g_dmaCTRLPKT_SPI3_TX.ELCNT = 1;
@@ -1556,8 +1566,8 @@ void SPI_DMA_init(SPI_Info spix)
            g_dmaCTRLPKT_SPI3_TX.FRDOFFSET = 0;
            g_dmaCTRLPKT_SPI3_TX.FRSOFFSET = 0;
            g_dmaCTRLPKT_SPI3_TX.PORTASGN  = PORTA_READ_PORTB_WRITE;
-           g_dmaCTRLPKT_SPI3_TX.RDSIZE    = ACCESS_16_BIT;
-           g_dmaCTRLPKT_SPI3_TX.WRSIZE    = ACCESS_16_BIT;
+           g_dmaCTRLPKT_SPI3_TX.RDSIZE    = ACCESS_8_BIT;
+           g_dmaCTRLPKT_SPI3_TX.WRSIZE    = ACCESS_8_BIT;
            g_dmaCTRLPKT_SPI3_TX.TTYPE     = FRAME_TRANSFER ;
            g_dmaCTRLPKT_SPI3_TX.ADDMODERD = ADDR_INC1;
            g_dmaCTRLPKT_SPI3_TX.ADDMODEWR = ADDR_FIXED;
@@ -1594,7 +1604,7 @@ void SPI_DMA_init(SPI_Info spix)
            while((spiREG4->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI4_TRANSMIT_channel, DMA_SPI4_TRANSMIT_REQUEST_LINE);
            g_dmaCTRLPKT_SPI4_TX.SADD      = (uint32)(SPI4_TX_DATA) ;
-           g_dmaCTRLPKT_SPI4_TX.DADD      = ((uint32_t)(&(spiREG4->DAT1))+2);
+           g_dmaCTRLPKT_SPI4_TX.DADD      = ((uint32_t)(&(spiREG4->DAT1))+3);
            g_dmaCTRLPKT_SPI4_TX.CHCTRL    = 0;
            g_dmaCTRLPKT_SPI4_TX.FRCNT = SPI4_send_SIZE;
            g_dmaCTRLPKT_SPI4_TX.ELCNT = 1;
@@ -1603,8 +1613,8 @@ void SPI_DMA_init(SPI_Info spix)
            g_dmaCTRLPKT_SPI4_TX.FRDOFFSET = 0;
            g_dmaCTRLPKT_SPI4_TX.FRSOFFSET = 0;
            g_dmaCTRLPKT_SPI4_TX.PORTASGN  = PORTA_READ_PORTB_WRITE;
-           g_dmaCTRLPKT_SPI4_TX.RDSIZE    = ACCESS_16_BIT;
-           g_dmaCTRLPKT_SPI4_TX.WRSIZE    = ACCESS_16_BIT;
+           g_dmaCTRLPKT_SPI4_TX.RDSIZE    = ACCESS_8_BIT;
+           g_dmaCTRLPKT_SPI4_TX.WRSIZE    = ACCESS_8_BIT;
            g_dmaCTRLPKT_SPI4_TX.TTYPE     = FRAME_TRANSFER ;
            g_dmaCTRLPKT_SPI4_TX.ADDMODERD = ADDR_INC1;
            g_dmaCTRLPKT_SPI4_TX.ADDMODEWR = ADDR_FIXED;
@@ -1641,7 +1651,7 @@ void SPI_DMA_init(SPI_Info spix)
            while((spiREG5->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI5_TRANSMIT_channel, DMA_SPI5_TRANSMIT_REQUEST_LINE);
            g_dmaCTRLPKT_SPI5_TX.SADD      = (uint32)(SPI5_TX_DATA) ;
-           g_dmaCTRLPKT_SPI5_TX.DADD      = ((uint32_t)(&(spiREG5->DAT1))+2);
+           g_dmaCTRLPKT_SPI5_TX.DADD      = ((uint32_t)(&(spiREG5->DAT1))+3);
            g_dmaCTRLPKT_SPI5_TX.CHCTRL    = 0;
            g_dmaCTRLPKT_SPI5_TX.FRCNT = SPI5_send_SIZE;
            g_dmaCTRLPKT_SPI5_TX.ELCNT = 1;
@@ -1650,8 +1660,8 @@ void SPI_DMA_init(SPI_Info spix)
            g_dmaCTRLPKT_SPI5_TX.FRDOFFSET = 0;
            g_dmaCTRLPKT_SPI5_TX.FRSOFFSET = 0;
            g_dmaCTRLPKT_SPI5_TX.PORTASGN  = PORTA_READ_PORTB_WRITE;
-           g_dmaCTRLPKT_SPI5_TX.RDSIZE    = ACCESS_16_BIT;
-           g_dmaCTRLPKT_SPI5_TX.WRSIZE    = ACCESS_16_BIT;
+           g_dmaCTRLPKT_SPI5_TX.RDSIZE    = ACCESS_8_BIT;
+           g_dmaCTRLPKT_SPI5_TX.WRSIZE    = ACCESS_8_BIT;
            g_dmaCTRLPKT_SPI5_TX.TTYPE     = FRAME_TRANSFER ;
            g_dmaCTRLPKT_SPI5_TX.ADDMODERD = ADDR_INC1;
            g_dmaCTRLPKT_SPI5_TX.ADDMODEWR = ADDR_FIXED;
@@ -1689,7 +1699,12 @@ void SPI_DMA_init(SPI_Info spix)
 
       }
 }
-
+/******************
+ * 函数：spiEndNotification(spiBASE_t *spi)
+ * 功能：SPI 接收中断服务函数
+ * 输入：spi ： spi地址。可选spiREG1、spiREG2、spiREG3、spiREG4、spiREG5.
+ * 输出：无
+ * *******************/
 void spiEndNotification(spiBASE_t *spi)
 {
     uint8_t SPI_Revice_data=0;

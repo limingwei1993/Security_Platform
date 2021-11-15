@@ -8,8 +8,8 @@
 #ifndef COMMUNICATION_EMIF_H_
 #define COMMUNICATION_EMIF_H_
 #include "HL_hal_stdtypes.h"
-#define EMIF_BASE_ADDRESS ((volatile uint32 *)(0x80000000U))
-enum EMIF_PAGE_SIZE
+#define EMIF_BASE_ADDRESS ((volatile uint32 *)(0x80000000U))  /*EMIF基础地址*/
+enum EMIF_PAGE_SIZE  /*EMIF关于sdram页大小*/
 {
     elements_256 = 0U,
     elements_512 = 1U,

@@ -44,7 +44,7 @@
 extern "C" {
 #endif
 
-#if IP_REASSEMBLY
+#if IP_REASSEMBLYz
 /* The IP reassembly timer interval in milliseconds. */
 #define IP_TMR_INTERVAL 1000
 
@@ -65,7 +65,7 @@ void ip_reass_tmr_EMAC(void);
 struct pbuf * ip_reass_EMAC(struct pbuf *p);
 #endif /* IP_REASSEMBLY */
 
-#if ip_frag_EMAC
+#if ip_frag
 #if !IP_FRAG_USES_STATIC_BUF && !LWIP_NETIF_TX_SINGLE_PBUF
 /** A custom pbuf that holds a reference to another pbuf, which is freed
  * when this custom pbuf is freed. This is used to create a custom pbuf_ref_EMAC
@@ -79,7 +79,7 @@ struct pbuf_custom_ref {
 #endif /* !IP_FRAG_USES_STATIC_BUF && !LWIP_NETIF_TX_SINGLE_PBUF */
 
 err_t ip_frag_EMAC(struct pbuf *p, struct netif *netif, ip_addr_t *dest);
-#endif /* ip_frag_EMAC */
+#endif /* ip_frag */
 
 #ifdef __cplusplus
 }

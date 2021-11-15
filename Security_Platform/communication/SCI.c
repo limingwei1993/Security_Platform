@@ -17,27 +17,27 @@
 #include "HL_reg_lin.h"
 #include "HL_pinmux.h"
 #include "HL_reg_pinmux.h"
-uint8 SCI1_RX_DATA[SCI1_RX_DATA_LEN]={0};
-uint8 SCI2_RX_DATA[SCI2_RX_DATA_LEN]={0};
-uint8 SCI3_RX_DATA[SCI3_RX_DATA_LEN]={0};
-uint8 SCI4_RX_DATA[SCI4_RX_DATA_LEN]={0};
-uint8 SCI1_TX_DATA[SCI1_TX_DATA_LEN]={0};
-uint8 SCI2_TX_DATA[SCI2_TX_DATA_LEN]={0};
-uint8 SCI3_TX_DATA[SCI3_TX_DATA_LEN]={0};
-uint8 SCI4_TX_DATA[SCI4_TX_DATA_LEN]={0};
-bool DMA_SCI1_TX=true;
-bool DMA_SCI2_TX=false;
-bool DMA_SCI3_TX=false;
-bool DMA_SCI4_TX=false;
-bool DMA_SCI1_RX=false;
-bool DMA_SCI2_RX=true;
-bool DMA_SCI3_RX=true;
-bool DMA_SCI4_RX=true;
-SCI_RecvQueue SCI1_MSG_Buff;
-SCI_RecvQueue SCI2_MSG_Buff;
-SCI_RecvQueue SCI3_MSG_Buff;
-SCI_RecvQueue SCI4_MSG_Buff;
-static volatile struct g_sciTransfer
+uint8 SCI1_RX_DATA[SCI1_RX_DATA_LEN]={0};  /*SCI1 DMA接收数据队列*/
+uint8 SCI2_RX_DATA[SCI2_RX_DATA_LEN]={0};  /*SCI2 DMA接收数据队列*/
+uint8 SCI3_RX_DATA[SCI3_RX_DATA_LEN]={0};  /*SCI3 DMA接收数据队列*/
+uint8 SCI4_RX_DATA[SCI4_RX_DATA_LEN]={0};  /*SCI4 DMA接收数据队列*/
+uint8 SCI1_TX_DATA[SCI1_TX_DATA_LEN]={0};  /*SCI1 DMA发送数据队列*/
+uint8 SCI2_TX_DATA[SCI2_TX_DATA_LEN]={0};  /*SCI2 DMA发送数据队列*/
+uint8 SCI3_TX_DATA[SCI3_TX_DATA_LEN]={0};  /*SCI3 DMA发送数据队列*/
+uint8 SCI4_TX_DATA[SCI4_TX_DATA_LEN]={0};  /*SCI4 DMA发送数据队列*/
+bool DMA_SCI1_TX=true;  /*SCI1 启用DMA发送数据标志*/
+bool DMA_SCI2_TX=false; /*SCI2 启用DMA发送数据标志*/
+bool DMA_SCI3_TX=false; /*SCI3 启用DMA发送数据标志*/
+bool DMA_SCI4_TX=false; /*SCI4 启用DMA发送数据标志*/
+bool DMA_SCI1_RX=true;  /*SCI1 启用DMA接收数据标志*/
+bool DMA_SCI2_RX=true;  /*SCI2 启用DMA接收数据标志*/
+bool DMA_SCI3_RX=true;  /*SCI3 启用DMA接收数据标志*/
+bool DMA_SCI4_RX=true;  /*SCI4 启用DMA接收数据标志*/
+SCI_RecvQueue SCI1_MSG_Buff;  /*SCI1 接收数据队列*/
+SCI_RecvQueue SCI2_MSG_Buff;  /*SCI2 接收数据队列*/
+SCI_RecvQueue SCI3_MSG_Buff;  /*SCI3 接收数据队列*/
+SCI_RecvQueue SCI4_MSG_Buff;  /*SCI4 接收数据队列*/
+static volatile struct g_sciTransfer  /*SCI 初始化传输数据参数*/
 {
     uint32   mode;         /* Used to check for TX interrupt Enable */
     uint32   tx_length;    /* Transmit data length in number of Bytes */
@@ -45,7 +45,12 @@ static volatile struct g_sciTransfer
     uint8    * tx_data;    /* Transmit data pointer */
     uint8    * rx_data;    /* Receive data pointer */
 } g_sciTransfer_t[4U];
-
+/******************
+ * 函数：void SCI2_IO_Configure(void)
+ * 功能：SCI2 I/O初始化
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI2_IO_Configure(void)
 {
     /* Enable Pin Muxing */
@@ -58,7 +63,12 @@ void SCI2_IO_Configure(void)
            pinMuxReg->KICKER0 = 0x00000000U;
            pinMuxReg->KICKER1 = 0x00000000U;
 }
-
+/******************
+ * 函数：void SCI3_IO_Configure(void)
+ * 功能：SCI3 I/O初始化
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI3_IO_Configure(void)
 {
     /* Enable Pin Muxing */
@@ -72,6 +82,12 @@ void SCI3_IO_Configure(void)
            pinMuxReg->KICKER0 = 0x00000000U;
            pinMuxReg->KICKER1 = 0x00000000U;
 }
+/******************
+ * 函数：void SCI4_IO_Configure(void)
+ * 功能：SCI4 I/O初始化
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI4_IO_Configure(void)
 {
     /* Enable Pin Muxing */
@@ -84,6 +100,16 @@ void SCI4_IO_Configure(void)
            pinMuxReg->KICKER0 = 0x00000000U;
            pinMuxReg->KICKER1 = 0x00000000U;
 }
+/******************
+ * 函数：void SCI_init(SCI_Info scix)
+ * 功能：SCI 初始化
+ * 输入：scix ： 参数信息。 ->ch：SCI编号；可选SCI1、SCI2、SCI3、SCI4.
+ *                    ->parity：奇偶校验。
+ *                    ->bitlen：数据长度。
+ *                    ->stopbits：停止位。
+ *                    ->burt：波特率。
+ * 输出：无
+ * *******************/
 void SCI_init(SCI_Info scix)
 {
        uint8 parity=0 ;
@@ -164,7 +190,7 @@ void SCI_init(SCI_Info scix)
                sciREG1->SETINT = (uint32)((uint32)0U << 26U)  /* Framing error */
                               | (uint32)((uint32)0U << 25U)  /* Overrun error */
                               | (uint32)((uint32)0U << 24U)  /* Parity error */
-                              | (uint32)((uint32)0U << 9U)  /* Receive */
+                              | (uint32)((uint32)1U << 9U)  /* Receive */
                               | (uint32)((uint32)0U << 1U)  /* Wakeup */
                               | (uint32)((uint32)0U << 0U);  /* Break detect */
 
@@ -252,7 +278,7 @@ void SCI_init(SCI_Info scix)
                /** - Finaly start SCI2 */
                sciREG2->GCR1 |= 0x80U;
 
-
+               SCI2_IO_Configure();
 
                break;
        case SCI3:
@@ -330,7 +356,7 @@ void SCI_init(SCI_Info scix)
                /** - Finaly start SCI3 */
                sciREG3->GCR1 |= 0x80U;
 
-
+               SCI3_IO_Configure();
                break;
        case SCI4:
                /** @b initialize @b SCI4 */
@@ -406,7 +432,7 @@ void SCI_init(SCI_Info scix)
 
                /** - Finaly start SCI4 */
                sciREG4->GCR1 |= 0x80U;
-
+               SCI4_IO_Configure();
        break;
        default:
            break;
@@ -421,6 +447,16 @@ g_dmaCTRL g_dmaCTRLPKT_SCI3_TX;             /* dma control packet configuration 
 g_dmaCTRL g_dmaCTRLPKT_SCI3_RX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SCI4_TX;             /* dma control packet configuration stack */
 g_dmaCTRL g_dmaCTRLPKT_SCI4_RX;             /* dma control packet configuration stack */
+/******************
+ * 函数：void SCI_DMA_init(SCI_Info scix)
+ * 功能：SCI DMA初始化
+ * 输入：scix ： 参数信息。 ->ch：SCI编号；可选SCI1、SCI2、SCI3、SCI4.
+ *                    ->parity：奇偶校验。
+ *                    ->bitlen：数据长度。
+ *                    ->stopbits：停止位。
+ *                    ->burt：波特率。
+ * 输出：无
+ * *******************/
 void SCI_DMA_init(SCI_Info scix)
 {
     switch(scix.ch)
@@ -434,7 +470,7 @@ void SCI_DMA_init(SCI_Info scix)
             g_dmaCTRLPKT_SCI1_TX.SADD      = (uint32)(SCI1_TX_DATA) ;
             g_dmaCTRLPKT_SCI1_TX.DADD      = ((uint32_t)(&(sciREG1->TD))+3);
             g_dmaCTRLPKT_SCI1_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SCI1_TX.FRCNT = SCI1_TX_DATA_LEN;
+            g_dmaCTRLPKT_SCI1_TX.FRCNT = 10;
             g_dmaCTRLPKT_SCI1_TX.ELCNT = 1;
             g_dmaCTRLPKT_SCI1_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SCI1_TX.ELSOFFSET = 0;
@@ -447,8 +483,8 @@ void SCI_DMA_init(SCI_Info scix)
             g_dmaCTRLPKT_SCI1_TX.ADDMODERD = ADDR_INC1;
             g_dmaCTRLPKT_SCI1_TX.ADDMODEWR = ADDR_FIXED;
             g_dmaCTRLPKT_SCI1_TX.AUTOINIT  = AUTOINIT_OFF;
-
             dmaSetCtrlPacket(DMA_SCI1_TRANSMIT_channel,g_dmaCTRLPKT_SCI1_TX);
+
 
 
             dmaReqAssign(DMA_SCI1_REVICE_channel, DMA_SCI1_REVICE_REQUEST_LINE);
@@ -628,7 +664,18 @@ void SCI_DMA_init(SCI_Info scix)
         break;
     }
 }
-
+/******************
+ * 函数：void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
+ * 功能：SCI 发送数据
+ * 输入：scix ： 参数信息。 ->ch：SCI编号；可选SCI1、SCI2、SCI3、SCI4.
+ *                    ->parity：奇偶校验。
+ *                    ->bitlen：数据长度。
+ *                    ->stopbits：停止位。
+ *                    ->burt：波特率。
+ *     buff ：发送的数据。
+ *     len ：发送的数据长度。
+ * 输出：无
+ * *******************/
 void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
 {
     uint8 i=0;
@@ -643,6 +690,9 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
                SCI1_TX_DATA[i]=buff[i];
             }
             while (((sciREG1->FLR & SCI_TX_INT) == 0U) || ((sciREG1->FLR & 0x4) == 0x4));
+
+    //        g_dmaCTRLPKT_SCI1_TX.FRCNT = len;
+    //        dmaSetCtrlPacket(DMA_SCI1_TRANSMIT_channel,g_dmaCTRLPKT_SCI1_TX);
             dmaSetChEnable(DMA_SCI1_TRANSMIT_channel, DMA_HW);
 
         }
@@ -730,7 +780,12 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
 
     }
 }
-
+/******************
+ * 函数：void SCI1_RX()
+ * 功能：SCI1 接收数据
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI1_RX()
 {
     uint8 i=0;
@@ -750,6 +805,12 @@ void SCI1_RX()
         SCI1_MSG_Buff.tail++;
     }
 }
+/******************
+ * 函数：void SCI2_RX()
+ * 功能：SCI2 接收数据
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI2_RX()
 {
     uint8 i=0;
@@ -769,6 +830,12 @@ void SCI2_RX()
         SCI2_MSG_Buff.tail++;
     }
 }
+/******************
+ * 函数：void SCI3_RX()
+ * 功能：SCI3 接收数据
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI3_RX()
 {
     uint8 i=0;
@@ -788,6 +855,12 @@ void SCI3_RX()
         SCI3_MSG_Buff.tail++;
     }
 }
+/******************
+ * 函数：void SCI4_RX()
+ * 功能：SCI4 接收数据
+ * 输入：无
+ * 输出：无
+ * *******************/
 void SCI4_RX()
 {
     uint8 i=0;
@@ -807,14 +880,13 @@ void SCI4_RX()
         SCI4_MSG_Buff.tail++;
     }
 }
-
-/*******************************************************************************
-Function:       // sciNotification
-Description:    // SCI interrupt handler
-Input:          // sci   : hardware SCI module trigger the interrupt.
-                // flags : type of interrupt in SCI module which trigger the interrupt
-Output:         // none
-*******************************************************************************/
+/******************
+ * 函数：void sciNotification(sciBASE_t *sci, uint32 flags)
+ * 功能：SCI 中端服务函数
+ * 输入：sci：sci地址。可选sciREG1、sciREG2、sciREG3、sciREG4.
+ *     flags：中断类型。 SCI_RX_INT--接收到数据
+ * 输出：无
+ * *******************/
 void sciNotification(sciBASE_t *sci, uint32 flags)
 {
     if(sci==sciREG1)
@@ -822,6 +894,30 @@ void sciNotification(sciBASE_t *sci, uint32 flags)
         if((flags == SCI_RX_INT))
         {
             SCI1_RX();
+        }
+
+    }
+    if(sci==sciREG2)
+    {
+        if((flags == SCI_RX_INT))
+        {
+           SCI2_RX();
+        }
+
+    }
+    if(sci==sciREG3)
+    {
+        if((flags == SCI_RX_INT))
+        {
+           SCI3_RX();
+        }
+
+    }
+    if(sci==sciREG4)
+    {
+        if((flags == SCI_RX_INT))
+        {
+           SCI4_RX();
         }
 
     }

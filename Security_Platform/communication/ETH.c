@@ -75,34 +75,27 @@ u32 DHCPfineTimer=0;
 u32 DHCPcoarseTimer=0;
 #endif
 
-__lwip_dev lwipdev;
-struct netif lwip_netif;                //定义一个全局的网络接口
-socket  psocket_server[ETH_TCP_NUM];
-uint8_t ETHx_MSG_buff[ETH_REVICE_BUFF_MAX_LEN]={0};
-uint32_t ETH_send_data_len=0;
-ETH_FRAM ETH_TCP[ETH_TCP_NUM];
-uint8_t ETH_TCP_connect_num=0;
+__lwip_dev lwipdev;                    /*定义一个本地的网络参数*/
+struct netif lwip_netif;                /*定义一个全局的网络接口*/
+socket  psocket_server[ETH_TCP_NUM];     /*TCP连接的信息组*/
+ETH_FRAM ETH_TCP[ETH_TCP_NUM];         /*TCP数据交互的帧*/
+uint8_t ETH_TCP_connect_num=0;         /*连接上的TCP个数*/
 
 extern uint32 memp_get_memorysize(void);
 extern u8_t *memp_memory;
 extern u8_t *ram_heap;
-/**
- * lwip 中mem和memp的内存释放
- * */
-void lwip_comm_mem_free(void)
-{
-
-}
-/**
- * lwip 中mem和memp的内存申请
- * */
+/******************
+ * 函数：uint8 lwip_comm_mem_malloc(void)
+ * 功能：lwip 中mem和memp的内存申请
+ * 输入：无
+ * 输出：申请结果。0--成功 ；1--失败。
+ * *******************/
 uint8 lwip_comm_mem_malloc(void)
 {
     memp_memory=memp_memory_buff;
     ram_heap=ram_heap_buff;
     if(!memp_memory||!ram_heap)
     {
-        lwip_comm_mem_free();
         return 1;
     }
     return 0;
@@ -111,6 +104,15 @@ uint8 lwip_comm_mem_malloc(void)
  * ETH初始化，固定IP
  * ethx：本机网口参数。
  * */
+/******************
+ * 函数：ETH_init(ETH_Info * ethx)
+ * 功能：lwip 的网络初始化,使用静态IP
+ * 输入：ethx：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->mask：子网掩码  如：“255, 255, 255, 0” --0xFFFFFF00
+ *      ->gate:网关  如：“192, 168, 0, 2” --0xC0A80002
+ * 输出：无
+ * *******************/
 void ETH_init(ETH_Info * ethx)
 {
         struct netif *Netif_Init_Flag;      //调用netif_add()函数时的返回值,用于判断网络初始化是否成功
@@ -160,10 +162,15 @@ void ETH_init(ETH_Info * ethx)
             netif_set_up(&lwip_netif);      //打开netif网口
         }
 }
-/**
- * ETH初始化，DHCP分配
- * timeout 超时
- * */
+/******************
+ * 函数：ETH_Info ETH_DHCP_init(uint32 timeout)
+ * 功能：LWIP 的网络初始化，使用DHCP
+ * 输入： timeout：超时参数
+ * 输出：ethx：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->mask：子网掩码  如：“255, 255, 255, 0” --0xFFFFFF00
+ *      ->gate:网关  如：“192, 168, 0, 2” --0xC0A80002
+ * *******************/
 ETH_Info ETH_DHCP_init(uint32 timeout)
 {
     struct netif *Netif_Init_Flag;      //调用netif_add()函数时的返回值,用于判断网络初始化是否成功
@@ -227,11 +234,17 @@ ETH_Info ETH_DHCP_init(uint32 timeout)
     }
     return ethx;
 }
-/**
- * 基于TCP协议，作为客户端连接服务器.
- * psocket:服务器参数
- * 工作：创建一个客户端，根据传入的参数连接服务器。
- * */
+
+/******************
+ * 函数：void ETH_TCP_Server_bind(socket * psocket)
+ * 功能： 基于TCP协议，作为客户端连接服务器
+ * 输入：psocket：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->port：本地端口
+ *      ->oIP :对方ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->oport：对方端口
+ * 输出：无
+ * *******************/
 void ETH_TCP_Server_bind(socket * psocket)
 {
     struct tcp_pcb *tcppcb;     //定义一个TCP服务器控制块
@@ -248,11 +261,16 @@ void ETH_TCP_Server_bind(socket * psocket)
         tcp_connect(tcppcb,&rmtipaddr,psocket->oport,ETH_TCP_client_connected);  //连接到目的地址的指定端口上,当连接成功后回调tcp_client_connected()函数
     }
 }
-/**
- * 基于TCP协议，作为服务器监听客户端.
- * psocket:服务器参数
- * 工作：根据传入的参数创建一个服务器，并进入监听状态。
- * */
+/******************
+ * 函数：void ETH_TCP_Server_lisiten(socket * psocket)
+ * 功能： 基于TCP协议，作为服务器监听客户端.
+ * 输入：psocket：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->port：本地端口
+ *      ->oIP :对方ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->oport：对方端口
+ * 输出：无
+ * *******************/
 void ETH_TCP_Server_lisiten(socket * psocket)
 {
     err_t err;
@@ -270,10 +288,14 @@ void ETH_TCP_Server_lisiten(socket * psocket)
         }
     }
 }
-/**
- * 基于TCP协议，作为客户端连接服务器后的回调函数.
- * 工作：对连接成功的服务器的IP和端口号进行保存。
- * */
+/******************
+ * 函数：err_t ETH_TCP_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
+ * 功能：基于TCP协议，作为客户端连接服务器后的回调函数.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      err：连接成功与失败标志。ERR_OK--成功
+ * 输出：连接成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETH_TCP_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
 {
     struct tcp_client_struct *es=NULL;
@@ -308,10 +330,14 @@ err_t ETH_TCP_client_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
     }
     return err;
 }
-/**
- * 基于TCP协议，作为服务器连接客户端后的回调函数.
- * 工作：对连接成功的客户端的IP和端口号进行保存。
- * */
+/******************
+ * 函数：err_t ETH_TCP_Server_accept(void *arg,struct tcp_pcb *newpcb,err_t err)
+ * 功能：基于TCP协议，作为服务器连接客户端后的回调函数.
+ * 输入：arg：
+ *      newpcb：网络信息
+ *      err：连接成功与失败标志。ERR_OK--成功
+ * 输出：连接成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETH_TCP_Server_accept(void *arg,struct tcp_pcb *newpcb,err_t err)
 {
     err_t ret_err;
@@ -341,10 +367,15 @@ err_t ETH_TCP_Server_accept(void *arg,struct tcp_pcb *newpcb,err_t err)
     return ret_err;
 }
 
-/**
- * 基于TCP协议，接收数据后的回调函数.
- * 工作：对接收到的网口参数进行判断是否以建立连接，如果建立了连接则将数据存放到接收缓冲区，等待使用。
- * */
+/******************
+ * 函数：err_t ETHx_TCP_Rx(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+ * 功能：基于TCP协议，接收数据后的回调函数.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      p：数据包
+ *      err：接收成功与失败标志。ERR_OK--成功
+ * 输出：接收成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETHx_TCP_Rx(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
     err_t ret_err;
@@ -405,22 +436,26 @@ err_t ETHx_TCP_Rx(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
     return ret_err;
 }
 
-/**
- * 基于TCP协议，出错的回调函数.
- *
- * */
+/******************
+ * 函数：void ETH_server_error(void *arg,err_t err)
+ * 功能：基于TCP协议，出错的回调函数.
+ * 输入：arg：
+ *      err：错误信息
+ * 输出：无
+ * *******************/
 void ETH_server_error(void *arg,err_t err)
 {
     LWIP_UNUSED_ARG(err);
     if(arg!=NULL)mem_free(arg);//释放内存
 }
-/**
- * 基于TCP协议，发送数据.
- * psocket：发送数据的网口参数
- * buff：发送的数据
- * len：发送的数据长度
- * 使用：此函数根据传入的网口参数判断网口是否已建立连接，如果建立了连接就将数据存放到发送缓冲区中，等待调度发送出去。
- * */
+/******************
+ * 函数：void ETH_TCP_Tx(socket * psocket, uint8_t *buff, int len)
+ * 功能：基于TCP协议，发送数据.
+ * 输入：psocket：发送数据的网口参数
+ *      buff：发送的数据
+ *      len：发送的数据长度
+ * 输出：无
+ * *******************/
 void ETH_TCP_Tx(socket * psocket, uint8_t *buff, int len)
 {
     uint8_t i=0;
@@ -443,10 +478,13 @@ void ETH_TCP_Tx(socket * psocket, uint8_t *buff, int len)
         }
     }
 }
-/**
- * 基于TCP协议，发送数据.
- * 工作：TCP维护，当发现发送缓冲区有发送数据时，将其发送。
- * */
+/******************
+ * 函数：err_t ETH_server_poll(void *arg, struct tcp_pcb *tpcb)
+ * 功能： TCP维护，当发现发送缓冲区有发送数据时，将其发送
+ * 输入：arg：
+ *      tpcb：网络信息
+ * 输出：处理结果
+ * *******************/
 err_t ETH_server_poll(void *arg, struct tcp_pcb *tpcb)
 {
     err_t ret_err;
@@ -475,10 +513,14 @@ err_t ETH_server_poll(void *arg, struct tcp_pcb *tpcb)
     }
     return ret_err;
 }
-/**
- * 基于TCP协议，发送数据.
- * 使用：用于调度使用
- * */
+/******************
+ * 函数：err_t ETH_server_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
+ * 功能：基于TCP协议，发送数据.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      len：数据长度
+ * 输出：处理结果
+ * *******************/
 err_t ETH_server_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 {
     struct tcp_server_struct *es;
@@ -487,10 +529,13 @@ err_t ETH_server_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
     if(es->p)ETH_server_senddata(tpcb,es);//发送数据
     return ERR_OK;
 }
-/**
- * 基于TCP协议，发送数据.
- * 使用：用于调度使用
- * */
+/******************
+ * 函数：void ETH_server_senddata(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
+ * 功能：基于TCP协议，发送数据.
+ * 输入：tpcb：网络信息
+ *      es：数据信息
+ * 输出：无
+ * *******************/
 void ETH_server_senddata(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
 {
     struct pbuf *ptr;
@@ -510,10 +555,13 @@ void ETH_server_senddata(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
         }else if(wr_err==ERR_MEM)es->p=ptr;
      }
 }
-/**
- * 基于TCP协议，断开服务器.
- * 使用：用于调度使用
- * */
+/******************
+ * 函数：void ETH_server_connection_close(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
+ * 功能：基于TCP协议，断开服务器.
+ * 输入：tpcb：网络信息
+ *      es：数据信息
+ * 输出：无
+ * *******************/
 void ETH_server_connection_close(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
 {
     tcp_close(tpcb);
@@ -527,10 +575,14 @@ void ETH_server_connection_close(struct tcp_pcb *tpcb, struct tcp_server_struct 
 extern void tcp_pcb_purge(struct tcp_pcb *pcb); //在 tcp.c里面
 extern struct tcp_pcb *tcp_active_pcbs;         //在 tcp.c里面
 extern struct tcp_pcb *tcp_tw_pcbs;             //在 tcp.c里面
-/**
- * 基于TCP协议，服务器断开.
- * 使用：强制删除TCP Server主动断开时的time wait
- * */
+
+/******************
+ * 函数：void ETH_server_remove_timewait(void)
+ * 功能：基于TCP协议，服务器断开.强制删除TCP Server主动断开时的time wait
+ * 输入：无
+ * 输出：无
+ *
+ * *******************/
 void ETH_server_remove_timewait(void)
 {
     struct tcp_pcb *pcb,*pcb2;
@@ -552,15 +604,23 @@ void ETH_server_remove_timewait(void)
     }
 }
 
-
+/******************
+ * 函数：void lwip_pkt_handle(void)
+ * 功能：基于TCP协议，对收到的数据包进行处理
+ * 输入：无
+ * 输出：无
+ *
+ * *******************/
 void lwip_pkt_handle(void)
 {
     ethernetif_input(&lwip_netif);
 }
-/**
- * 基于DHCP的维护.
- * 使用：对基于DHCP协议的调度维护。
- * */
+/******************
+ * 函数：void lwip_dhcp_process_handle(void)
+ * 功能：基于TCP协议，lwip的dhcp维护.
+ * 输入：无
+ * 输出：无
+ * *******************/
 void lwip_dhcp_process_handle(void)
 {
     u32 ip=0,netmask=0,gw=0;

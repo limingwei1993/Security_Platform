@@ -1,12 +1,12 @@
 /*
  * FlexRay.c
  *
- *  Created on: 2021年8月6日
+ *  Created on: 2021骞�8鏈�6鏃�
  *      Author: 15755
  */
 
 /****
- * GSN0-GSN1 数据传输的准确性
+ * GSN0-GSN1 鏁版嵁浼犺緭鐨勫噯纭��
  *
  *
  *
@@ -14,10 +14,12 @@
 
 #include"FlexRay.h"
 #include"HL_sys_vim.h"
+/*FLEXRAYA 消息邮箱分配表*/
 FLEXRAY_McanMESSAGE_BOX FLEXRAYA_McanMESSAGE_BOX_TABLE[FLEXRAY_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0}};
+/*FLEXRAYB 消息邮箱分配表*/
 FLEXRAY_McanMESSAGE_BOX FLEXRAYB_McanMESSAGE_BOX_TABLE[FLEXRAY_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
@@ -25,8 +27,15 @@ FLEXRAY_McanMESSAGE_BOX FLEXRAYB_McanMESSAGE_BOX_TABLE[FLEXRAY_MCANMESSAGE_BOX_N
 
 wrhs Fr_LPduPtr;
 bc Fr_LSduPtr;
-FLEXRAY_MSG_BUFF FLEXRAYA_Msg_Buff;
-FLEXRAY_MSG_BUFF FLEXRAYB_Msg_Buff;
+FLEXRAY_MSG_BUFF FLEXRAYA_Msg_Buff;   /*FLEXRAYA 保存接收到的数据*/
+FLEXRAY_MSG_BUFF FLEXRAYB_Msg_Buff;   /*FLEXRAYB 保存接收到的数据*/
+/******************
+ * 函数：void FLEXRAY_init(FLEXRAY_Info flexrayx)
+ * 功能：FLEXRAY 初始化
+ * 输入：flexrayx：配置参数句柄。->ch：FLEXRAY的编号；可选：FLEXRAYA、FLEXRAYB。
+ *                    ->burt：波特率
+ * 输出：无
+ * *******************/
 void FLEXRAY_init(FLEXRAY_Info flexrayx)
 {
     FlexRayREG->GCS |=  (uint32)((uint32)1U << 31U) |        /*Endianness Correction on VBusp Master  1--ON*/
@@ -93,7 +102,7 @@ void FLEXRAY_init(FLEXRAY_Info flexrayx)
     FlexRayCOM->SUCC[1]=0x0F036DA2; // gListenNoise = Fh, pdListenTimeout = 224674d = 36DA2h
                                     //LTN [27:24]: Listen timeout noise. Configures the upper limit for the startup and wakeup listen timeout in the
                                     //presence of noise. Must be identical in all nodes of a cluster.
-                                    //The wakeup / startup noise timeout is calculated as follows: LT[20:0] � (LTN[3:0] + 1)
+                                    //The wakeup / startup noise timeout is calculated as follows: LT[20:0] 锟� (LTN[3:0] + 1)
                                     // LT[20:0]: Listen timeout. Configures the upper limit of the startup and wakeup listen timeout.
     FlexRayCOM->SUCC[2] = 0x000000FF; // gMaxWithoutClockCorrectionFatal = Fh , passive = Fh
                                             //WCF[7:4]: Maximum without clock correction fatal. These bits define the number of consecutive even/odd
@@ -2131,6 +2140,12 @@ void FLEXRAY_init(FLEXRAY_Info flexrayx)
 
 }
 
+/******************
+ * 函数：int header_crc(wrhs *Fr_LPduPtr)
+ * 功能：FLEXRAY 产生数据校验值
+ * 输入：Fr_LPduPtr：配置参数句柄。
+ * 输出：数据校验值
+ * *******************/
 int header_crc(wrhs *Fr_LPduPtr)
 {
   unsigned int header;
@@ -2172,7 +2187,13 @@ int header_crc(wrhs *Fr_LPduPtr)
   return CrcReg_X;
 }
 
-
+/******************
+ * 函数：void FlexRay_Set(uint8 direction,wrhs *Fr_LPduPtr)
+ * 功能：FLEXRAY 部分寄存器配置
+ * 输入：direction：数据传输方向。可选：INPUT--接收；OUTPUT--发送。
+ *     Fr_LPduPtr：参数集合
+ * 输出：无
+ * *******************/
 void FlexRay_Set(uint8 direction,wrhs *Fr_LPduPtr)
 {
     if(direction==INPUT)
@@ -2208,7 +2229,13 @@ void FlexRay_Set(uint8 direction,wrhs *Fr_LPduPtr)
        FlexRayBUFF->RDHS[2] |=(uint32)((uint32)(Fr_LPduPtr->dp & 0x7FF) << 0U) ;        /*Data pointer  */
     }
 }
-
+/******************
+ * 函数：void Fr_TransmitTxRx(uint8 direction, bc *Fr_LSduPtr)
+ * 功能：FLEXRAY 数据发送或接收
+ * 输入：direction：数据传输方向。可选：INPUT--接收；OUTPUT--发送。
+ *     Fr_LPduPtr：参数集合
+ * 输出：无
+ * *******************/
 void Fr_TransmitTxRx(uint8 direction, bc *Fr_LSduPtr)
 {
     if(direction==INPUT)
@@ -2237,7 +2264,15 @@ void Fr_TransmitTxRx(uint8 direction, bc *Fr_LSduPtr)
    }
 }
 
-
+/******************
+ * 函数：void FLEXRAY_Tx(FLEXRAY_Info flexrayx, uint32 ID, uint8* buff, uint32 len)
+ * 功能：FLEXRAY 数据发送
+ * 输入：flexrayx：FLEXRAY参数。
+ *     ID：数据帧ID；
+ *     buff：发送的数据。
+ *     len：发送的数据长度。
+ * 输出：无
+ * *******************/
 void FLEXRAY_Tx(FLEXRAY_Info flexrayx, uint32 ID, uint8* buff, uint32 len)
 {
     uint8 i=0;
@@ -2252,6 +2287,13 @@ void FLEXRAY_Tx(FLEXRAY_Info flexrayx, uint32 ID, uint8* buff, uint32 len)
     BoxNum=Get_FlexrayMcanMESSAGE_BOX_Num(flexrayx,ID);
     FlexRay_Send( BoxNum);
 }
+/******************
+ * 函数：void  FlexRay_Send( uint8 boxnum)
+ * 功能：FLEXRAY 数据发送
+ * 输入：boxnum：发送信息的邮箱编号。
+ *
+ * 输出：无
+ * *******************/
 void  FlexRay_Send( uint8 boxnum)
 {
 
@@ -2266,6 +2308,12 @@ void  FlexRay_Send( uint8 boxnum)
         while (((FlexRayBUFF->IBCR & 0x80000000) != 0));
 
 }
+/******************
+ * 函数：void FLERAY_Rx(void)
+ * 功能：FLEXRAY 数据接收
+ * 输入：无。
+ * 输出：无
+ * *******************/
 void FLERAY_Rx(void)
 {
     while (((FlexRayBUFF->OBCR) & 0x00008000) != 0);
@@ -2277,7 +2325,12 @@ void FLERAY_Rx(void)
    FlexRayBUFF->OBCR=((1 << 8) | (63 & 0x3F)); //req=0, view=1
 
 }
-
+/******************
+ * 函数：int Fr_ControllerInit(void)
+ * 功能：FLEXRAY 初始化时相关配置
+ * 输入：无。
+ * 输出：配置结果。0--成功；1--失败
+ * *******************/
 int Fr_ControllerInit(void)
 {
     unsigned int error=0;
@@ -2304,7 +2357,12 @@ int Fr_ControllerInit(void)
     while ((FlexRayCOM->SUCC[0] & 0x00000080) != 0x0);
     return error;
 }
-
+/******************
+ * 函数：int Fr_AllowColdStart(void)
+ * 功能：FLEXRAY 初开始运行
+ * 输入：无。
+ * 输出：配置结果。0--成功；1--失败
+ * *******************/
 int Fr_AllowColdStart(void)
 {
     unsigned int error=0;
@@ -2318,7 +2376,12 @@ int Fr_AllowColdStart(void)
     while ((FlexRayCOM->SUCC[0] & 0x00000080) != 0x0);
     return error;
 }
-
+/******************
+ * 函数：int Fr_StartCommunication(void)
+ * 功能：FLEXRAY 初开始执行命令
+ * 输入：无。
+ * 输出：配置结果。0--成功；1--失败
+ * *******************/
 int Fr_StartCommunication(void)
 {
     unsigned int error=0;
@@ -2330,6 +2393,14 @@ int Fr_StartCommunication(void)
     if ((FlexRayCOM->SUCC[0] & 0xF) == 0x0) error = 1;
     return error;
 }
+/******************
+ * 函数：uint8 Get_FlexrayMcanMESSAGE_BOX_Num(FLEXRAY_Info flesxrayx,uint32 ID)
+ * 功能：根据ID获取获取发送数据的BOX号
+ * 输入：flesxrayx：配置参数句柄。->ch：FLEXRAY的编号；可选：FLEXRAYA、FLEXRAYB。
+ *                    ->burt：波特率
+ *     ID：帧ID。
+ * 输出：发送数据的BOX号
+ * *******************/
 uint8 Get_FlexrayMcanMESSAGE_BOX_Num(FLEXRAY_Info flesxrayx,uint32 ID)
 {
     uint8 i=0;
@@ -2361,6 +2432,15 @@ uint8 Get_FlexrayMcanMESSAGE_BOX_Num(FLEXRAY_Info flesxrayx,uint32 ID)
     return box;
 
 }
+/******************
+ * 函数：void FLEXRAY_Tx_bind(FLEXRAY_Info flesxrayx, uint32 ID,uint8 messagebox)
+ * 功能：绑定ID与BOX号关系
+ * 输入：flesxrayx：配置参数句柄。->ch：FLEXRAY的编号；可选：FLEXRAYA、FLEXRAYB。
+ *                    ->burt：波特率
+ *     ID：帧ID。
+ *     messagebox：BOX编号
+ * 输出：无
+ * *******************/
 void FLEXRAY_Tx_bind(FLEXRAY_Info flesxrayx, uint32 ID,uint8 messagebox)
 {
     uint8 i=0;
@@ -2404,6 +2484,15 @@ void FLEXRAY_Tx_bind(FLEXRAY_Info flesxrayx, uint32 ID,uint8 messagebox)
             break;
     }
 }
+/******************
+ * 函数：void FLEXRAY_RecvQueueIn(uint8 FLEXRAY_DIR,uint32 ID, uint32 * data,uint8 len)
+ * 功能：将接收道的数据存放到队列
+ * 输入：FLEXRAY_DIR：FLEXRAY的编号；可选：FLEXRAYA、FLEXRAYB。
+ *      ID：帧ID。
+ *     data：接收的数据。
+ *     len：接收的数据长度。
+ * 输出：无
+ * *******************/
 void FLEXRAY_RecvQueueIn(uint8 FLEXRAY_DIR,uint32 ID, uint32 * data,uint8 len)
 {
     uint8 i=0;
@@ -2457,9 +2546,15 @@ void FLEXRAY_RecvQueueIn(uint8 FLEXRAY_DIR,uint32 ID, uint32 * data,uint8 len)
     }
 
 }
+
 #pragma CODE_STATE(FlexRayT0CInterrupt, 32)
 #pragma INTERRUPT(FlexRayT0CInterrupt, IRQ)
-
+/******************
+ * 函数：void FlexRayT0CInterrupt(void)
+ * 功能：FlexRay接收中断服务函数。
+ * 输入：无
+ * 输出：无
+ * *******************/
 void FlexRayT0CInterrupt(void)
 {
     uint8 len=0;
@@ -2496,7 +2591,12 @@ void FlexRayT0CInterrupt(void)
 
 #pragma CODE_STATE(FlexRayT1CInterrupt, 32)
 #pragma INTERRUPT(FlexRayT1CInterrupt, IRQ)
-
+/******************
+ * 函数：void FlexRayT1CInterrupt(void)
+ * 功能：FlexRay发送中断服务函数。
+ * 输入：无
+ * 输出：无
+ * *******************/
 void FlexRayT1CInterrupt(void)
 {
 

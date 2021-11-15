@@ -613,7 +613,7 @@ nullreturn:
 }
 #endif /* IP_REASSEMBLY */
 
-#if ip_frag_EMAC
+#if ip_frag
 #if IP_FRAG_USES_STATIC_BUF
 static u8_t buf[LWIP_MEM_ALIGN_SIZE(IP_FRAG_MAX_MTU + MEM_ALIGNMENT - 1)];
 #else /* IP_FRAG_USES_STATIC_BUF */

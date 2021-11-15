@@ -1704,20 +1704,20 @@ void mibspi1HighLevelInterrupt(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-                uint16 *destbuff;
-                destbuff = g_spiPacket_t[0U].rxdata_ptr;
+            //    uint16 *destbuff;
+           //     destbuff = g_spiPacket_t[0U].rxdata_ptr;
 
-                *destbuff = (uint16)spiREG1->BUF;
+           //     *destbuff = (uint16)spiREG1->BUF;
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-                g_spiPacket_t[0U].rxdata_ptr++;
-                g_spiPacket_t[0U].rx_length--;
+           //     g_spiPacket_t[0U].rxdata_ptr++;
+           //     g_spiPacket_t[0U].rx_length--;
 
-                if(g_spiPacket_t[0U].rx_length == 0U)
-                {
-                    spiREG1->INT0 = (spiREG1->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-                    g_spiPacket_t[0U].rx_data_status = SPI_COMPLETED;
+            //    if(g_spiPacket_t[0U].rx_length == 0U)
+           //     {
+            //        spiREG1->INT0 = (spiREG1->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
+            //        g_spiPacket_t[0U].rx_data_status = SPI_COMPLETED;
                     spiEndNotification(spiREG1);
-                }
+            //    }
                 break;
              }
 

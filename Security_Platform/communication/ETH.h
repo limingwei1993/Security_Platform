@@ -25,7 +25,7 @@
 #define ETH_SEND_BUFF_MAX_LEN 1024   /*ETH TCP 发送数据缓冲区长度*/
 #define ETH_TCP_NUM 10               /*ETH TCP 连接的数量*/
 #define LWIP_MAX_DHCP_TRIES     4   //DHCP服务器最大重试次数
-//lwip控制结构体
+/*本地网口参数用于lwip使用*/
 typedef struct
 {
     uint8 mac[6];      //MAC地址
@@ -41,24 +41,24 @@ typedef struct
                     //0XFF,获取失败.
 }__lwip_dev;
 extern __lwip_dev lwipdev;  //lwip控制结构体
-
+/*本地网口参数用于自己使用*/
 typedef struct  ETH_Info_s
 {
     uint8 ch;
-    uint32 IP;
-    uint32 mask;
-    uint32 gate;
+    uint32 IP;   /*本机网络IP*/
+    uint32 mask; /*子网掩码*/
+    uint32 gate; /*网关*/
 } ETH_Info;
-
+/*本地TCP连接状态*/
 typedef struct  SOCKET_s
 {
-    uint32 IP;        /*对面网络IP*/
+    uint32 IP;        /*本机网络IP*/
     uint16 port;       /*本机网络端口号*/
     uint32 oIP;        /*对面网络IP*/
     uint16 oport;      /*对面网络端口号*/
     uint8 isConnected; /*网络连接状态*/
 } socket;
-
+/*本地TCP数据交互状态*/
 typedef struct  ETH_FRAM_s
 {
     uint32 oIP;        /*对面网络IP*/
@@ -71,28 +71,28 @@ typedef struct  ETH_FRAM_s
     uint32_t revice_data_len; /*接收缓冲区的数据长度*/
 } ETH_FRAM;
 
-enum tcp_server_states
+enum tcp_server_states  /*TCP 服务器链路状态*/
 {
     ES_TCPSERVER_NONE = 0,
     ES_TCPSERVER_ACCEPTED,
     ES_TCPSERVER_CLOSING,
 };
 
-struct tcp_server_struct
+struct tcp_server_struct /*TCP 服务器网络数据信息*/
 {
     uint8 state;
     struct tcp_pcb *pcb;
     struct pbuf *p;
 };
 
-enum tcp_client_states
+enum tcp_client_states  /*TCP 客户端链路状态*/
 {
     ES_TCPCLIENT_NONE = 0,
     ES_TCPCLIENT_CONNECTED,
     ES_TCPCLIENT_CLOSING,
 };
 
-struct tcp_client_struct
+struct tcp_client_struct  /*TCP 客户端网络数据信息*/
 {
     uint8 state;
     struct tcp_pcb *pcb;

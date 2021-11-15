@@ -20,15 +20,19 @@
 #include "string.h"
 #include "ETH.h"
 #include "ETH_EMAC.h"
-uint8_t ETH_TCP_connect_num_EMAC=0;
-ETH_FRAM ETH_TCP_EMAC[ETH_TCP_NUM_EMAC];
-socket  psocket_server_EMAC[ETH_TCP_NUM];
-uint8_t revice_ok=0;
+uint8_t ETH_TCP_connect_num_EMAC=0;      /*连接上的TCP个数*/
+ETH_FRAM ETH_TCP_EMAC[ETH_TCP_NUM_EMAC]; /*TCP数据交互的帧*/
+socket  psocket_server_EMAC[ETH_TCP_NUM];  /*TCP连接的信息组*/
 
-/**
- * ETH初始化，固定IP
- * ethx：本机网口参数。
- * */
+/******************
+ * 函数：void ETH_init_EMAC(ETH_Info * ethx)
+ * 功能：EMAC 的网络初始化,使用静态IP
+ * 输入：ethx：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->mask：子网掩码  如：“255, 255, 255, 0” --0xFFFFFF00
+ *      ->gate:网关  如：“192, 168, 0, 2” --0xC0A80002
+ * 输出：无
+ * *******************/
 void ETH_init_EMAC(ETH_Info * ethx)
 {
         unsigned int   ipAddr;
@@ -56,10 +60,15 @@ void ETH_init_EMAC(ETH_Info * ethx)
         IntMasterIRQEnable();
         ipAddr = lwIPInit(0, macAddress, *((uint32_t *)UDP_Iaddr), *((uint32_t *)netmask), *((uint32_t *)gateway), IPADDR_USE_STATIC);
 }
-/**
- * ETH初始化，DHCP分配
- * timeout 超时
- * */
+/******************
+ * 函数：void ETH_init_EMAC(ETH_Info * ethx)
+ * 功能：EMAC 的网络初始化，使用DHCP
+ * 输入： timeout：超时参数
+ * 输出：ethx：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->mask：子网掩码  如：“255, 255, 255, 0” --0xFFFFFF00
+ *      ->gate:网关  如：“192, 168, 0, 2” --0xC0A80002
+ * *******************/
 ETH_Info ETH_DHCP_init_EMAC(uint32 timeout)
 {
     unsigned int  ipAddr;
@@ -85,11 +94,17 @@ ETH_Info ETH_DHCP_init_EMAC(uint32 timeout)
     }
     return ethx;
 }
-/**
- * 基于TCP协议，作为客户端连接服务器.
- * psocket:服务器参数
- * 工作：创建一个客户端，根据传入的参数连接服务器。
- * */
+
+/******************
+ * 函数：void ETH_TCP_Server_bind_EMAC(socket * psocket)
+ * 功能：EMAC 基于TCP协议，作为客户端连接服务器
+ * 输入：psocket：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->port：本地端口
+ *      ->oIP :对方ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->oport：对方端口
+ * 输出：无
+ * *******************/
 void ETH_TCP_Server_bind_EMAC(socket * psocket)
 {
     err_t err;
@@ -115,11 +130,17 @@ void ETH_TCP_Server_bind_EMAC(socket * psocket)
         }
     }
 }
-/**
- * 基于TCP协议，作为服务器监听客户端.
- * psocket:服务器参数
- * 工作：根据传入的参数创建一个服务器，并进入监听状态。
- * */
+
+/******************
+ * 函数：void ETH_TCP_Server_lisiten_EMAC(socket * psocket)
+ * 功能：EMAC 基于TCP协议，作为服务器监听客户端.
+ * 输入：psocket：网络信息
+ *      ->IP :本地ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->port：本地端口
+ *      ->oIP :对方ID  如：“192, 168, 0, 2” --0xC0A80002
+ *      ->oport：对方端口
+ * 输出：无
+ * *******************/
 void ETH_TCP_Server_lisiten_EMAC(socket * psocket)
 {
     err_t err;
@@ -141,10 +162,15 @@ void ETH_TCP_Server_lisiten_EMAC(socket * psocket)
         }
     }
 }
-/**
- * 基于TCP协议，作为客户端连接服务器后的回调函数.
- * 工作：对连接成功的服务器的IP和端口号进行保存。
- * */
+
+/******************
+ * 函数：err_t ETH_TCP_client_connected_EMAC(void *arg, struct tcp_pcb *tpcb, err_t err)
+ * 功能：EMAC 基于TCP协议，作为客户端连接服务器后的回调函数.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      err：连接成功与失败标志。ERR_OK--成功
+ * 输出：连接成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETH_TCP_client_connected_EMAC(void *arg, struct tcp_pcb *tpcb, err_t err)
 {
     struct tcp_client_struct *es=NULL;
@@ -179,10 +205,15 @@ err_t ETH_TCP_client_connected_EMAC(void *arg, struct tcp_pcb *tpcb, err_t err)
     }
     return err;
 }
-/**
- * 基于TCP协议，作为服务器连接客户端后的回调函数.
- * 工作：对连接成功的客户端的IP和端口号进行保存。
- * */
+
+/******************
+ * 函数：err_t ETH_TCP_Server_accept_EMAC(void *arg,struct tcp_pcb *newpcb,err_t err)
+ * 功能：EMAC 基于TCP协议，作为服务器连接客户端后的回调函数.
+ * 输入：arg：
+ *      newpcb：网络信息
+ *      err：连接成功与失败标志。ERR_OK--成功
+ * 输出：连接成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETH_TCP_Server_accept_EMAC(void *arg,struct tcp_pcb *newpcb,err_t err)
 {
     err_t ret_err;
@@ -212,10 +243,15 @@ err_t ETH_TCP_Server_accept_EMAC(void *arg,struct tcp_pcb *newpcb,err_t err)
     return ret_err;
 }
 
-/**
- * 基于TCP协议，接收数据后的回调函数.
- * 工作：对接收到的网口参数进行判断是否以建立连接，如果建立了连接则将数据存放到接收缓冲区，等待使用。
- * */
+/******************
+ * 函数：err_t ETHx_TCP_Rx_EMAC(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+ * 功能：EMAC 基于TCP协议，接收数据后的回调函数.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      p：数据包
+ *      err：接收成功与失败标志。ERR_OK--成功
+ * 输出：接收成功与失败状态。ERR_OK--成功
+ * *******************/
 err_t ETHx_TCP_Rx_EMAC(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
 {
     err_t ret_err;
@@ -260,7 +296,6 @@ err_t ETHx_TCP_Rx_EMAC(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t er
                     }
                     ETH_TCP_EMAC[i].isRevice=1;
                     ETH_TCP_EMAC[i].revice_data_len=data_len>ETH_REVICE_BUFF_MAX_LEN_EMAC?ETH_REVICE_BUFF_MAX_LEN_EMAC:data_len;
-                    revice_ok=1;
                 }
             }
             tcp_recved_EMAC(tpcb,p->tot_len);//用于获取接收数据,通知LWIP可以获取更多数据
@@ -277,22 +312,28 @@ err_t ETHx_TCP_Rx_EMAC(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t er
     return ret_err;
 }
 
-/**
- * 基于TCP协议，出错的回调函数.
- *
- * */
+
+/******************
+ * 函数：void ETH_server_error_EMAC(void *arg,err_t err)
+ * 功能：EMAC 基于TCP协议，出错的回调函数.
+ * 输入：arg：
+ *      err：错误信息
+ * 输出：无
+ * *******************/
 void ETH_server_error_EMAC(void *arg,err_t err)
 {
     LWIP_UNUSED_ARG(err);
     if(arg!=NULL)mem_free_EMAC(arg);//释放内存
 }
-/**
- * 基于TCP协议，发送数据.
- * psocket：发送数据的网口参数
- * buff：发送的数据
- * len：发送的数据长度
- * 使用：此函数根据传入的网口参数判断网口是否已建立连接，如果建立了连接就将数据存放到发送缓冲区中，等待调度发送出去。
- * */
+
+/******************
+ * 函数：void ETH_TCP_Tx_EMAC(socket * psocket, uint8_t *buff, int len)
+ * 功能：EMAC 基于TCP协议，发送数据.
+ * 输入：psocket：发送数据的网口参数
+ *      buff：发送的数据
+ *      len：发送的数据长度
+ * 输出：无
+ * *******************/
 void ETH_TCP_Tx_EMAC(socket * psocket, uint8_t *buff, int len)
 {
     uint8_t i=0;
@@ -315,10 +356,14 @@ void ETH_TCP_Tx_EMAC(socket * psocket, uint8_t *buff, int len)
         }
     }
 }
-/**
- * 基于TCP协议，发送数据.
- * 工作：TCP维护，当发现发送缓冲区有发送数据时，将其发送。
- * */
+
+/******************
+ * 函数：err_t ETH_server_poll_EMAC(void *arg, struct tcp_pcb *tpcb)
+ * 功能：EMAC TCP维护，当发现发送缓冲区有发送数据时，将其发送
+ * 输入：arg：
+ *      tpcb：网络信息
+ * 输出：处理结果
+ * *******************/
 err_t ETH_server_poll_EMAC(void *arg, struct tcp_pcb *tpcb)
 {
     err_t ret_err;
@@ -347,10 +392,15 @@ err_t ETH_server_poll_EMAC(void *arg, struct tcp_pcb *tpcb)
     }
     return ret_err;
 }
-/**
- * 基于TCP协议，发送数据.
- * 使用：用于调度使用
- * */
+
+/******************
+ * 函数：err_t ETH_server_sent_EMAC(void *arg, struct tcp_pcb *tpcb, u16_t len)
+ * 功能：EMAC 基于TCP协议，发送数据.
+ * 输入：arg：
+ *      tpcb：网络信息
+ *      len：数据长度
+ * 输出：处理结果
+ * *******************/
 err_t ETH_server_sent_EMAC(void *arg, struct tcp_pcb *tpcb, u16_t len)
 {
     struct tcp_server_struct *es;
@@ -359,10 +409,14 @@ err_t ETH_server_sent_EMAC(void *arg, struct tcp_pcb *tpcb, u16_t len)
     if(es->p)ETH_server_senddata_EMAC(tpcb,es);//发送数据
     return ERR_OK;
 }
-/**
- * 基于TCP协议，发送数据.
- * 使用：用于调度使用
- * */
+
+/******************
+ * 函数：void ETH_server_senddata_EMAC(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
+ * 功能：EMAC 基于TCP协议，发送数据.
+ * 输入：tpcb：网络信息
+ *      es：数据信息
+ * 输出：无
+ * *******************/
 void ETH_server_senddata_EMAC(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
 {
     struct pbuf *ptr;
@@ -382,10 +436,14 @@ void ETH_server_senddata_EMAC(struct tcp_pcb *tpcb, struct tcp_server_struct *es
         }else if(wr_err==ERR_MEM)es->p=ptr;
      }
 }
-/**
- * 基于TCP协议，断开服务器.
- * 使用：用于调度使用
- * */
+
+/******************
+ * 函数：void ETH_server_connection_close_EMAC(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
+ * 功能：EMAC 基于TCP协议，断开服务器.
+ * 输入：tpcb：网络信息
+ *      es：数据信息
+ * 输出：无
+ * *******************/
 void ETH_server_connection_close_EMAC(struct tcp_pcb *tpcb, struct tcp_server_struct *es)
 {
     tcp_close_EMAC(tpcb);
@@ -397,10 +455,14 @@ void ETH_server_connection_close_EMAC(struct tcp_pcb *tpcb, struct tcp_server_st
     if(es)mem_free_EMAC(es);
 }
 
-/**
- * 基于TCP协议，lwip维护.
- * 使用：对基于lwip协议的调度维护。用于主循环中使用。
- * */
+
+/******************
+ * 函数：void EMAC_lwip_periodic_handle(void)
+ * 功能：EMAC 基于TCP协议，lwip维护.
+ * 输入：无
+ * 输出：无
+ * 注意：此函数放到主函数或是定时器以10ms调度。
+ * *******************/
 void EMAC_lwip_periodic_handle(void)
 {
     EMACTxIntPulseDisable(EMAC_0_BASE, EMAC_CTRL_0_BASE, 0, 0);

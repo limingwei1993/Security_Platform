@@ -8,8 +8,17 @@
 #include "gpio.h"
 #include "HL_reg_gio.h"
 #include "HL_reg_het.h"
+/*输入I/O口信息*/
 GIO_Info Input_IO_list[INPUT_IO_NUM]={{GPIOA,0},{GPIOA,1},{GPIOA,2},{GPIOA,3},{GPIOA,4},{GPIOA,5},{GPIOA,6},{GPIOA,7}};
+/*输出I/O口信息*/
 GIO_Info Outnput_IO_list[OUTPUT_IO_NUM]={{GPIOB,0},{GPIOB,1},{GPIOB,2},{GPIOB,3},{GPIOB,4},{GPIOB,5},{GPIOB,6},{GPIOB,7}};
+/******************
+ * 函数：void GPO_Input_init(GIO_Info* pch)
+ * 功能：I/O口 输入初始化
+ * 输入：pch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：无
+ * *******************/
 void GPO_Input_init(GIO_Info* pch)
 {
     uint8 i=0;
@@ -38,6 +47,13 @@ void GPO_Input_init(GIO_Info* pch)
            }
        }
 }
+/******************
+ * 函数：void GPO_Output_init(GIO_Info* pch)
+ * 功能：I/O口 输出初始化
+ * 输入：pch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：无
+ * *******************/
 void GPO_Output_init(GIO_Info* pch)
 {
         uint8 i=0;
@@ -66,7 +82,13 @@ void GPO_Output_init(GIO_Info* pch)
            }
        }
 }
-
+/******************
+ * 函数：IO_STATE GPO_get(GIO_Info input_ch)
+ * 功能：获取I/O口 状态
+ * 输入：input_ch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：I/O口状态
+ * *******************/
 IO_STATE GPO_get(GIO_Info input_ch)
 {
     IO_STATE sate=IO_LOW;
@@ -80,7 +102,14 @@ IO_STATE GPO_get(GIO_Info input_ch)
     }
     return sate;
 }
-
+/******************
+ * 函数：void GPO_set(GIO_Info output_ch, IO_STATE target)
+ * 功能：设置I/O口 状态
+ * 输入：input_ch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ *      target：I/O口状态。可选IO_LOW、IO_LOW=0
+ * 输出：无
+ * *******************/
 void GPO_set(GIO_Info output_ch, IO_STATE target)
 {
     if(output_ch.port==GPIOA &&(  output_ch.pin<=7) )
@@ -95,7 +124,13 @@ void GPO_set(GIO_Info output_ch, IO_STATE target)
     }
 }
 
-
+/******************
+ * 函数：void N2HET_As_Gio_Input_init(GIO_Info* pch)
+ * 功能：N2HET 口 输入初始化
+ * 输入：pch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：无
+ * *******************/
 void N2HET_As_Gio_Input_init(GIO_Info* pch)
 {
    uint8 i=0;
@@ -119,6 +154,13 @@ void N2HET_As_Gio_Input_init(GIO_Info* pch)
        }
    }
 }
+/******************
+ * 函数：void GPO_Output_init(GIO_Info* pch)
+ * 功能：N2HET 口 输出初始化
+ * 输入：pch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：无
+ * *******************/
 void N2HET_As_Gio_Output_init(GIO_Info* pch)
 {
     uint8 i=0;
@@ -142,7 +184,13 @@ void N2HET_As_Gio_Output_init(GIO_Info* pch)
        }
    }
 }
-
+/******************
+ * 函数：IO_STATE N2HET_As_Gio_get(GIO_Info input_ch)
+ * 功能：获取N2HET口 状态
+ * 输入：input_ch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ * 输出：I/O口状态
+ * *******************/
 IO_STATE N2HET_As_Gio_get(GIO_Info input_ch)
 {
     IO_STATE sate=IO_LOW;
@@ -156,7 +204,14 @@ IO_STATE N2HET_As_Gio_get(GIO_Info input_ch)
     }
     return sate;
 }
-
+/******************
+ * 函数：void N2HET_As_Gio_set(GIO_Info output_ch, IO_STATE target)
+ * 功能：设置N2HET口 状态
+ * 输入：input_ch：配置参数句柄。->port：GIO的编号；可选：GPIOA、GPIOB。
+ *                    ->pin:引脚号
+ *      target：I/O口状态。可选IO_LOW、IO_LOW=0
+ * 输出：无
+ * *******************/
 void N2HET_As_Gio_set(GIO_Info output_ch, IO_STATE target)
 {
     if(output_ch.port==N2HET1 &&(output_ch.pin<=7) )
