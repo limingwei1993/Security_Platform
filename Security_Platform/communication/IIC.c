@@ -1408,17 +1408,17 @@ void IIC_ADD32_read(IIC_Info iicx, uint32 addr, uint8* buff,uint32 len)
         break;
     }
 }
-extern uint8 RX_PACK[60];
-uint8 iic_re_len=0;
 void i2cNotification(i2cBASE_t *i2c, uint32 flags)
 {
 /*  enter user code between the USER CODE BEGIN and USER CODE END. */
 /* USER CODE BEGIN (24) */
     if(i2c==i2cREG1 && flags==I2C_RX_INT)
     {
-        if(iic_re_len>=60)
-            iic_re_len=0;
-        RX_PACK[iic_re_len++]= ((uint8)i2cREG1->DRR);
+
+    }
+    else if(i2c==i2cREG2 && flags==I2C_RX_INT)
+    {
+
     }
 /* USER CODE END */
 }

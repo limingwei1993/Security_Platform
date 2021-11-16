@@ -25,5 +25,8 @@
 #include"HL_rti.h"
 #include"HL_reg_i2c.h"
 #include"HL_i2c.h"
+#include"HL_reg_spi.h"
+#include"HL_spi.h"
+
 void user_mian(void);
 #endif /* COMMUNICATION_USER_MAIN_H_ */
