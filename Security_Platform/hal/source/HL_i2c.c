@@ -87,7 +87,7 @@ void i2cInit(void)
                    | (uint32)((uint32)1U <<11U)     /* stop condition   */
                    | (uint32)((uint32)1U <<10U)     /* Master/Slave mode  */
                    | (uint32)((uint32)I2C_TRANSMITTER)     /* Transmitter/receiver */
-                   | (uint32)((uint32)I2C_7BIT_AMODE)     /* xpanded address */
+                   | (uint32)((uint32)I2C_10BIT_AMODE)     /* xpanded address */
                    | (uint32)((uint32)0U << 7U)      /* repeat mode */
                    | (uint32)((uint32)0U << 6U)     /* digital loopback */
                    | (uint32)((uint32)0U << 4U)     /* start byte - master only */
@@ -104,7 +104,7 @@ void i2cInit(void)
     i2cREG1->DMACR = 0x00U;
 
     /** - set i2c data count */
-    i2cREG1->CNT = 8U;
+    i2cREG1->CNT = 16U;
 
     /** - disable all interrupts */
     i2cREG1->IMR = 0x00U;
@@ -143,7 +143,7 @@ void i2cInit(void)
     i2cREG1->IMR    = (uint32)((uint32)0U << 6U)     /* Address as slave interrupt      */
                     | (uint32)((uint32)0U << 5U)     /* Stop Condition detect interrupt */
                     | (uint32)((uint32)0U << 4U)     /* Transmit data ready interrupt   */
-                    | (uint32)((uint32)0U << 3U)     /* Receive data ready interrupt    */
+                    | (uint32)((uint32)1U << 3U)     /* Receive data ready interrupt    */
                     | (uint32)((uint32)0U << 2U)     /* Register Access ready interrupt */
                     | (uint32)((uint32)0U << 1U)     /* No Acknowledgment interrupt    */
                     | (uint32)((uint32)0U);     /* Arbitration Lost interrupt      */
@@ -222,7 +222,7 @@ void i2cInit(void)
     i2cREG2->IMR    = (uint32)((uint32)0U << 6U)     /* Address as slave interrupt      */
                     | (uint32)((uint32)0U << 5U)     /* Stop Condition detect interrupt */
                     | (uint32)((uint32)0U << 4U)     /* Transmit data ready interrupt   */
-                    | (uint32)((uint32)0U << 3U)     /* Receive data ready interrupt    */
+                    | (uint32)((uint32)1U << 3U)     /* Receive data ready interrupt    */
                     | (uint32)((uint32)0U << 2U)     /* Register Access ready interrupt */
                     | (uint32)((uint32)0U << 1U)     /* No Acknowledgment interrupt    */
                     | (uint32)(0U);     /* Arbitration Lost interrupt      */
@@ -899,7 +899,204 @@ void i2c2GetConfigValue(i2c_config_reg_t *config_reg, config_value_type_t type)
     }
 }
 
+/* USER CODE BEGIN (36) */
+/* USER CODE END */
 
+/* SourceId : I2C_SourceId_024 */
+/* DesignId : I2C_DesignId_022 */
+/* Requirements : HL_CONQ_I2C_SR30 */
+/** @fn void i2cInterrupt(void)
+*   @brief Interrupt for I2C
+*/
+#pragma CODE_STATE(i2cInterrupt, 32)
+#pragma INTERRUPT(i2cInterrupt, IRQ)
+
+void i2cInterrupt(void)
+{
+    uint32 vec = (i2cREG1->IVR & 0x00000007U);
+
+/* USER CODE BEGIN (37) */
+/* USER CODE END */
+
+    switch (vec)
+    {
+    case 1U:
+/* USER CODE BEGIN (38) */
+/* USER CODE END */
+        i2cNotification(i2cREG1, (uint32)I2C_AL_INT);
+        break;
+    case 2U:
+/* USER CODE BEGIN (39) */
+/* USER CODE END */
+        i2cNotification(i2cREG1, (uint32)I2C_NACK_INT);
+        break;
+    case 3U:
+/* USER CODE BEGIN (40) */
+/* USER CODE END */
+        i2cNotification(i2cREG1, (uint32)I2C_ARDY_INT);
+        break;
+    case 4U:
+/* USER CODE BEGIN (41) */
+/* USER CODE END */
+        /* receive */
+        {
+         /*  uint8 byte = ((uint8)i2cREG1->DRR);
+
+            if (g_i2cTransfer_t[0U].length > 0U)
+            {
+                *g_i2cTransfer_t[0U].data = byte;
+                g_i2cTransfer_t[0U].data++;
+                g_i2cTransfer_t[0U].length--;
+                if (g_i2cTransfer_t[0U].length == 0U)
+                {*/
+                    i2cNotification(i2cREG1, (uint32)I2C_RX_INT);
+                /*}
+            }*/
+        break;
+        }
+
+    case 5U:
+/* USER CODE BEGIN (42) */
+/* USER CODE END */
+        /* transmit */
+        /*SAFETYMCUSW 30 S MR:12.2,12.3 <APPROVED> "Used for data count in Transmit/Receive polling and Interrupt mode" */
+        if (g_i2cTransfer_t[0U].length > 0U)
+        {
+            i2cREG1->DXR = (uint32) *g_i2cTransfer_t[0U].data;
+            /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
+            g_i2cTransfer_t[0U].data++;
+            g_i2cTransfer_t[0U].length--;
+            if(g_i2cTransfer_t[0U].length == 0U)
+            {   /* Disable TX interrupt after desired data count transfered*/
+                i2cREG1->IMR &= (uint32)(~(uint32)I2C_TX_INT);
+                i2cNotification(i2cREG1, (uint32)I2C_TX_INT);
+            }
+        }
+        break;
+
+
+    case 6U:
+/* USER CODE BEGIN (43) */
+/* USER CODE END */
+        /* transmit */
+        i2cNotification(i2cREG1, (uint32)I2C_SCD_INT);
+        break;
+
+    case 7U:
+/* USER CODE BEGIN (44) */
+/* USER CODE END */
+        i2cNotification(i2cREG1, (uint32)I2C_AAS_INT);
+        break;
+
+    default:
+/* USER CODE BEGIN (45) */
+/* USER CODE END */
+        /* phantom interrupt, clear flags and return */
+        i2cREG1->STR = 0x000007FFU;
+        break;
+    }
+/* USER CODE BEGIN (46) */
+/* USER CODE END */
+}
+
+/* USER CODE BEGIN (47) */
+/* USER CODE END */
+
+/* SourceId : I2C_SourceId_025 */
+/* DesignId : I2C_DesignId_022 */
+/* Requirements : HL_CONQ_I2C_SR31 */
+/** @fn void i2c2Interrupt(void)
+*   @brief Interrupt for I2C
+*/
+#pragma CODE_STATE(i2c2Interrupt, 32)
+#pragma INTERRUPT(i2c2Interrupt, IRQ)
+
+void i2c2Interrupt(void)
+{
+    uint32 vec = (i2cREG2->IVR & 0x00000007U);
+
+/* USER CODE BEGIN (48) */
+/* USER CODE END */
+
+    switch (vec)
+    {
+    case 1U:
+/* USER CODE BEGIN (49) */
+/* USER CODE END */
+        i2cNotification(i2cREG2, (uint32)I2C_AL_INT);
+        break;
+    case 2U:
+/* USER CODE BEGIN (50) */
+/* USER CODE END */
+        i2cNotification(i2cREG2, (uint32)I2C_NACK_INT);
+        break;
+    case 3U:
+/* USER CODE BEGIN (51) */
+/* USER CODE END */
+        i2cNotification(i2cREG2, (uint32)I2C_ARDY_INT);
+        break;
+    case 4U:
+/* USER CODE BEGIN (52) */
+/* USER CODE END */
+        /* receive */
+        {
+        /*    uint8 byte = ((uint8)i2cREG2->DRR);
+
+            if (g_i2cTransfer_t[1U].length > 0U)
+            {
+                *g_i2cTransfer_t[1U].data = byte;
+                g_i2cTransfer_t[1U].data++;
+                g_i2cTransfer_t[1U].length--;
+                if (g_i2cTransfer_t[1U].length == 0U)
+                {*/
+                    i2cNotification(i2cREG2, (uint32)I2C_RX_INT);
+              /*  }
+            }*/
+         break;
+        }
+
+    case 5U:
+/* USER CODE BEGIN (53) */
+/* USER CODE END */
+        /* transmit */
+        if (g_i2cTransfer_t[1U].length > 0U)
+        {
+            i2cREG2->DXR = (uint32)*g_i2cTransfer_t[1U].data;
+            /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
+            g_i2cTransfer_t[1U].data++;
+            g_i2cTransfer_t[1U].length--;
+            if(g_i2cTransfer_t[1U].length == 0U)
+            {   /* Disable TX interrupt after desired data count transfered*/
+                i2cREG2->IMR &= (uint32)(~(uint32)I2C_TX_INT);
+                i2cNotification(i2cREG2, (uint32)I2C_TX_INT);
+            }
+        }
+        break;
+
+
+    case 6U:
+/* USER CODE BEGIN (54) */
+/* USER CODE END */
+        /* transmit */
+        i2cNotification(i2cREG2, (uint32)I2C_SCD_INT);
+        break;
+
+    case 7U:
+/* USER CODE BEGIN (55) */
+/* USER CODE END */
+        i2cNotification(i2cREG2, (uint32)I2C_AAS_INT);
+        break;
+
+    default:
+/* USER CODE BEGIN (56) */
+/* USER CODE END */
+        /* phantom interrupt, clear flags and return */
+        i2cREG2->STR = 0x000007FFU;
+        break;
+    }
+/* USER CODE BEGIN (57) */
+/* USER CODE END */
+}
 
 /** @fn i2cSetDirection(i2cBASE_t *i2c, uint32 dir)
 *   @brief Sets I2C as transmitter or receiver.

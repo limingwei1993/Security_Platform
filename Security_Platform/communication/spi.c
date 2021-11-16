@@ -34,26 +34,13 @@ bool DMA_SPI2_RX=true;      /*SPI2 启用DMA接收标志*/
 bool DMA_SPI3_RX=true;      /*SPI3 启用DMA接收标志*/
 bool DMA_SPI4_RX=true;      /*SPI4 启用DMA接收标志*/
 bool DMA_SPI5_RX=true;      /*SPI5 启用DMA接收标志*/
-uint8 SPI1_TX_DATA[SPI1_send_SIZE];         /*SPI1 DMA发送数据队列*/
+
 uint8 SPI1_RX_DATA[SPI1_revice_SIZE];       /*SPI1 DMA接收数据队列*/
-uint8 SPI2_TX_DATA[SPI2_send_SIZE];         /*SPI2 DMA发送数据队列*/
 uint8 SPI2_RX_DATA[SPI2_revice_SIZE];       /*SPI2 DMA接收数据队列*/
-uint8 SPI3_TX_DATA[SPI3_send_SIZE];         /*SPI3 DMA发送数据队列*/
 uint8 SPI3_RX_DATA[SPI3_revice_SIZE];       /*SPI3 DMA接收数据队列*/
-uint8 SPI4_TX_DATA[SPI4_send_SIZE];         /*SPI3 DMA发送数据队列*/
 uint8 SPI4_RX_DATA[SPI4_revice_SIZE];       /*SPI4 DMA接收数据队列*/
-uint8 SPI5_TX_DATA[SPI5_send_SIZE];         /*SPI4 DMA发送数据队列*/
 uint8 SPI5_RX_DATA[SPI5_revice_SIZE];       /*SPI5 DMA接收数据队列*/
-g_dmaCTRL g_dmaCTRLPKT_SPI1_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI1_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI2_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI2_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI3_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI3_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI4_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI4_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI5_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SPI5_RX;             /* dma control packet configuration stack */
+
 /******************
  * 函数：void SPI_init(SPI_Info spix)
  * 功能：SPI 初始化
@@ -1017,17 +1004,16 @@ void SPI_init(SPI_Info spix)
 
 void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
 {
-    uint8 i=0;
     switch(spix.ch)
     {
     case SPI1:
         if(DMA_SPI1_TX==true)
         {
-            for(i=0;i<len;i++)
-            {
-                SPI1_TX_DATA[i]=buff[i];
-            }
+            while ((dmaREG->PEND & (1<<DMA_SPI1_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI1_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SPI1_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SPI1_TRANSMIT_channel, DMA_HW);
+            spiREG1->DAT1=(uint32)buff[0];
         }
         else
         {
@@ -1056,11 +1042,11 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI2:
         if(DMA_SPI2_TX==true)
         {
-                for(i=0;i<len;i++)
-                {
-                    SPI2_TX_DATA[i]=buff[i];
-                }
-                dmaSetChEnable(DMA_SPI2_TRANSMIT_channel, DMA_HW);
+            while ((dmaREG->PEND & (1<<DMA_SPI2_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI2_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SPI2_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI2_TRANSMIT_channel, DMA_HW);
+            spiREG2->DAT1=(uint32)buff[0];
         }
         else
         {
@@ -1090,11 +1076,11 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI3:
         if(DMA_SPI3_TX==true)
         {
-                for(i=0;i<len;i++)
-                {
-                    SPI3_TX_DATA[i]=buff[i];
-                }
-                dmaSetChEnable(DMA_SPI3_TRANSMIT_channel, DMA_HW);
+            while ((dmaREG->PEND & (1<<DMA_SPI3_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI3_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SPI3_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI3_TRANSMIT_channel, DMA_HW);
+            spiREG3->DAT1=(uint32)buff[0];
         }
         else
         {
@@ -1124,11 +1110,11 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI4:
         if(DMA_SPI4_TX==true)
         {
-                for(i=0;i<len;i++)
-                {
-                    SPI4_TX_DATA[i]=buff[i];
-                }
-                dmaSetChEnable(DMA_SPI4_TRANSMIT_channel, DMA_HW);
+            while ((dmaREG->PEND & (1<<DMA_SPI4_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI4_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SPI4_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI4_TRANSMIT_channel, DMA_HW);
+            spiREG4->DAT1=(uint32)buff[0];
         }
         else
         {
@@ -1158,11 +1144,11 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI5:
         if(DMA_SPI5_TX==true)
         {
-                for(i=0;i<len;i++)
-                {
-                    SPI5_TX_DATA[i]=buff[i];
-                }
-                dmaSetChEnable(DMA_SPI5_TRANSMIT_channel, DMA_HW);
+            while ((dmaREG->PEND & (1<<DMA_SPI5_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI5_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SPI5_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI5_TRANSMIT_channel, DMA_HW);
+            spiREG5->DAT1=(uint32)buff[0];
         }
         else
         {
@@ -1209,6 +1195,7 @@ void SPI_Master_send(SPI_Info spix,uint8* buff, uint32 len)
 void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
 {
     uint8 i=0;
+    uint8 sendbuff[100]={0};
     switch(spix.ch)
     {
     case SPI1:
@@ -1216,9 +1203,17 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
         {
             for(i=0;i<len;i++)
             {
-                SPI1_TX_DATA[i]=0xff00 | buff[i];
+                if(i<100)
+                {
+                   sendbuff[i]=0xff00 | buff[i];
+                }
             }
+            while ((dmaREG->PEND & (1<<DMA_SPI1_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI1_TRANSMIT_channel].ISADDR  = (uint32_t)(sendbuff)+1;
+            dmaRAMREG->PCP[DMA_SPI1_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SPI1_TRANSMIT_channel, DMA_HW);
+            spiREG1->DAT1=(uint32)sendbuff[0];
+
         }
         else
         {
@@ -1248,11 +1243,18 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI2:
         if(DMA_SPI2_TX==true)
         {
-                for(i=0;i<len;i++)
+            for(i=0;i<len;i++)
+            {
+                if(i<100)
                 {
-                    SPI2_TX_DATA[i]=0xff00 | buff[i];
+                   sendbuff[i]=0xff00 | buff[i];
                 }
-                dmaSetChEnable(DMA_SPI2_TRANSMIT_channel, DMA_HW);
+            }
+            while ((dmaREG->PEND & (1<<DMA_SPI2_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI2_TRANSMIT_channel].ISADDR  = (uint32_t)(sendbuff)+1;
+            dmaRAMREG->PCP[DMA_SPI2_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI2_TRANSMIT_channel, DMA_HW);
+            spiREG1->DAT1=(uint32)sendbuff[0];
         }
         else
         {
@@ -1282,11 +1284,18 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI3:
         if(DMA_SPI3_TX==true)
         {
-                for(i=0;i<len;i++)
+            for(i=0;i<len;i++)
+            {
+                if(i<100)
                 {
-                    SPI3_TX_DATA[i]=0xff00 | buff[i];
+                   sendbuff[i]=0xff00 | buff[i];
                 }
-                dmaSetChEnable(DMA_SPI3_TRANSMIT_channel, DMA_HW);
+            }
+            while ((dmaREG->PEND & (1<<DMA_SPI3_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI3_TRANSMIT_channel].ISADDR  = (uint32_t)(sendbuff)+1;
+            dmaRAMREG->PCP[DMA_SPI3_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI3_TRANSMIT_channel, DMA_HW);
+            spiREG3->DAT1=(uint32)sendbuff[0];
         }
         else
         {
@@ -1316,11 +1325,18 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI4:
         if(DMA_SPI4_TX==true)
         {
-                for(i=0;i<len;i++)
+            for(i=0;i<len;i++)
+            {
+                if(i<100)
                 {
-                    SPI4_TX_DATA[i]=0xff00 | buff[i];
+                   sendbuff[i]=0xff00 | buff[i];
                 }
-                dmaSetChEnable(DMA_SPI4_TRANSMIT_channel, DMA_HW);
+            }
+            while ((dmaREG->PEND & (1<<DMA_SPI4_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI4_TRANSMIT_channel].ISADDR  = (uint32_t)(sendbuff)+1;
+            dmaRAMREG->PCP[DMA_SPI4_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI4_TRANSMIT_channel, DMA_HW);
+            spiREG4->DAT1=(uint32)sendbuff[0];
         }
         else
         {
@@ -1350,11 +1366,18 @@ void SPI_Slave_send(SPI_Info spix,uint8* buff, uint32 len)
     case SPI5:
         if(DMA_SPI5_TX==true)
         {
-                for(i=0;i<len;i++)
+            for(i=0;i<len;i++)
+            {
+                if(i<100)
                 {
-                    SPI5_TX_DATA[i]=0xff00 | buff[i];
+                   sendbuff[i]=0xff00 | buff[i];
                 }
-                dmaSetChEnable(DMA_SPI5_TRANSMIT_channel, DMA_HW);
+            }
+            while ((dmaREG->PEND & (1<<DMA_SPI5_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SPI5_TRANSMIT_channel].ISADDR  = (uint32_t)(sendbuff)+1;
+            dmaRAMREG->PCP[DMA_SPI5_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
+            dmaSetChEnable(DMA_SPI5_TRANSMIT_channel, DMA_HW);
+            spiREG5->DAT1=(uint32)sendbuff[0];
         }
         else
         {
@@ -1455,17 +1478,27 @@ void SPI5_revive(uint8_t  revice_data)
  * *******************/
 void SPI_DMA_init(SPI_Info spix)
 {
-
+    uint32 SPI_TX_DATA=0;
+    g_dmaCTRL g_dmaCTRLPKT_SPI1_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI1_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI2_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI2_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI3_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI3_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI4_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI4_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI5_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SPI5_RX;             /* dma control packet configuration stack */
       switch(spix.ch)
       {
       case SPI1:
             while((spiREG1->FLG & 0x00000200U) != 0x00000200U);
             dmaReqAssign(DMA_SPI1_TRANSMIT_channel, DMA_SPI1_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_SPI1_TX.SADD      = (uint32)(SPI1_TX_DATA) ;
+            g_dmaCTRLPKT_SPI1_TX.SADD      = (uint32)(SPI_TX_DATA) ;
             g_dmaCTRLPKT_SPI1_TX.DADD      = ((uint32_t)(&(spiREG2->DAT1))+3);
             g_dmaCTRLPKT_SPI1_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SPI1_TX.FRCNT = SPI1_send_SIZE;
-            g_dmaCTRLPKT_SPI1_TX.ELCNT = 1;
+            g_dmaCTRLPKT_SPI1_TX.FRCNT = 0;
+            g_dmaCTRLPKT_SPI1_TX.ELCNT = 0;
             g_dmaCTRLPKT_SPI1_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SPI1_TX.ELSOFFSET = 0;
             g_dmaCTRLPKT_SPI1_TX.FRDOFFSET = 0;
@@ -1509,11 +1542,11 @@ void SPI_DMA_init(SPI_Info spix)
       case SPI2:
            while((spiREG2->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI2_TRANSMIT_channel, DMA_SPI2_TRANSMIT_REQUEST_LINE);
-           g_dmaCTRLPKT_SPI2_TX.SADD      = (uint32)(SPI2_TX_DATA) ;
+           g_dmaCTRLPKT_SPI2_TX.SADD      = (uint32)(SPI_TX_DATA) ;
            g_dmaCTRLPKT_SPI2_TX.DADD      = ((uint32_t)(&(spiREG2->DAT1))+3);
            g_dmaCTRLPKT_SPI2_TX.CHCTRL    = 0;
-           g_dmaCTRLPKT_SPI2_TX.FRCNT = SPI2_send_SIZE;
-           g_dmaCTRLPKT_SPI2_TX.ELCNT = 1;
+           g_dmaCTRLPKT_SPI2_TX.FRCNT = 0;
+           g_dmaCTRLPKT_SPI2_TX.ELCNT = 0;
            g_dmaCTRLPKT_SPI2_TX.ELDOFFSET = 0;
            g_dmaCTRLPKT_SPI2_TX.ELSOFFSET = 0;
            g_dmaCTRLPKT_SPI2_TX.FRDOFFSET = 0;
@@ -1556,11 +1589,11 @@ void SPI_DMA_init(SPI_Info spix)
       case SPI3:
            while((spiREG3->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI3_TRANSMIT_channel, DMA_SPI3_TRANSMIT_REQUEST_LINE);
-           g_dmaCTRLPKT_SPI3_TX.SADD      = (uint32)(SPI3_TX_DATA) ;
+           g_dmaCTRLPKT_SPI3_TX.SADD      = (uint32)(SPI_TX_DATA) ;
            g_dmaCTRLPKT_SPI3_TX.DADD      = ((uint32_t)(&(spiREG3->DAT1))+3);
            g_dmaCTRLPKT_SPI3_TX.CHCTRL    = 0;
-           g_dmaCTRLPKT_SPI3_TX.FRCNT = SPI3_send_SIZE;
-           g_dmaCTRLPKT_SPI3_TX.ELCNT = 1;
+           g_dmaCTRLPKT_SPI3_TX.FRCNT = 0;
+           g_dmaCTRLPKT_SPI3_TX.ELCNT = 0;
            g_dmaCTRLPKT_SPI3_TX.ELDOFFSET = 0;
            g_dmaCTRLPKT_SPI3_TX.ELSOFFSET = 0;
            g_dmaCTRLPKT_SPI3_TX.FRDOFFSET = 0;
@@ -1603,11 +1636,11 @@ void SPI_DMA_init(SPI_Info spix)
       case SPI4:
            while((spiREG4->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI4_TRANSMIT_channel, DMA_SPI4_TRANSMIT_REQUEST_LINE);
-           g_dmaCTRLPKT_SPI4_TX.SADD      = (uint32)(SPI4_TX_DATA) ;
+           g_dmaCTRLPKT_SPI4_TX.SADD      = (uint32)(SPI_TX_DATA) ;
            g_dmaCTRLPKT_SPI4_TX.DADD      = ((uint32_t)(&(spiREG4->DAT1))+3);
            g_dmaCTRLPKT_SPI4_TX.CHCTRL    = 0;
-           g_dmaCTRLPKT_SPI4_TX.FRCNT = SPI4_send_SIZE;
-           g_dmaCTRLPKT_SPI4_TX.ELCNT = 1;
+           g_dmaCTRLPKT_SPI4_TX.FRCNT = 0;
+           g_dmaCTRLPKT_SPI4_TX.ELCNT = 0;
            g_dmaCTRLPKT_SPI4_TX.ELDOFFSET = 0;
            g_dmaCTRLPKT_SPI4_TX.ELSOFFSET = 0;
            g_dmaCTRLPKT_SPI4_TX.FRDOFFSET = 0;
@@ -1650,11 +1683,11 @@ void SPI_DMA_init(SPI_Info spix)
       case SPI5:
            while((spiREG5->FLG & 0x00000200U) != 0x00000200U);
            dmaReqAssign(DMA_SPI5_TRANSMIT_channel, DMA_SPI5_TRANSMIT_REQUEST_LINE);
-           g_dmaCTRLPKT_SPI5_TX.SADD      = (uint32)(SPI5_TX_DATA) ;
+           g_dmaCTRLPKT_SPI5_TX.SADD      = (uint32)(SPI_TX_DATA) ;
            g_dmaCTRLPKT_SPI5_TX.DADD      = ((uint32_t)(&(spiREG5->DAT1))+3);
            g_dmaCTRLPKT_SPI5_TX.CHCTRL    = 0;
-           g_dmaCTRLPKT_SPI5_TX.FRCNT = SPI5_send_SIZE;
-           g_dmaCTRLPKT_SPI5_TX.ELCNT = 1;
+           g_dmaCTRLPKT_SPI5_TX.FRCNT = 0;
+           g_dmaCTRLPKT_SPI5_TX.ELCNT = 0;
            g_dmaCTRLPKT_SPI5_TX.ELDOFFSET = 0;
            g_dmaCTRLPKT_SPI5_TX.ELSOFFSET = 0;
            g_dmaCTRLPKT_SPI5_TX.FRDOFFSET = 0;

@@ -13,6 +13,9 @@ ETH_Info  ethx;
 socket  psocket;
 ETH_Info IPPOS;
 extern uint8_t revice_ok;
+uint8 buff1[40]={0};
+uint8 buff2[40]={0};
+uint8 buff3[40]={0};
 uint8 buff[40]={0};
 uint16 num=0;
 uint32 time_nu=5000;
@@ -20,6 +23,12 @@ SPI_Info spix;
 SCI_Info scix;
 ADC_Single_Channel_Info pch;
 ADC_Continues_Channel_Info PCHS;
+uint8  TX_PACK[16]={'H','E','R','C','U','L','E','S','M','I','C','R','O','-','T','I'};
+uint8  RX_PACK[60]={0};
+
+
+/* USER CODE BEGIN (1) */
+
 /******************
  * 函数：void user_mian(void)
  * 功能：用户主函数入口
@@ -28,6 +37,30 @@ ADC_Continues_Channel_Info PCHS;
  * *******************/
 void user_mian(void)
 {
+    uint32 i;
+
+    IIC_Info iicx;
+    iicx.ch=1;
+    iicx.ticks=100;
+    uint32 buf_size = 16;
+    uint8  *t_buff = &TX_PACK[0];
+    uint8  *r_buff = &RX_PACK[0];
+
+    IIC_init(iicx);
+    _enable_IRQ_interrupt_();
+    _enable_IRQ();
+    dmaEnable();
+    ICC_DMA_init(iicx);
+    i2cSetOwnAdd(i2cREG1,0x48);
+    i2cEnableLoopback(i2cREG1);
+    IIC_ADD8_write(iicx, 0x10, TX_PACK, 15);
+    for(i=0;i<1000000;i++);
+     /* Clear Stop Condition detect flag  */
+     i2cClearSCD(i2cREG1);
+
+        /* wait for ever  */
+        while(1);
+
 
     /*
     pch.ADC_group=1;
@@ -72,39 +105,36 @@ void user_mian(void)
         while(time_nu--);
         time_nu=50000;
     }*/
-    /*
+/*
     scix.ch=1;
     scix.burt=9600;
     scix.bitlen=8;
     scix.stopbits=1;
     scix.parity=0;
-    _enable_IRQ_interrupt_();
-    _enable_IRQ();
     SCI_init(scix);
     dmaEnable();
     SCI_DMA_init(scix);
     for(num=0;num<40;num++)
     {
-        buff[num]=num;
+        buff[num]=1;
+        buff1[num]=2;
+        buff2[num]=3;
+        buff3[num]=4;
     }
     while(1)
     {
-
-         SCI_Tx(scix, buff,10);
+        while(time_nu--);
+        SCI_Tx(scix, buff,10);
+        time_nu=0xfff0;
          while(time_nu--);
-         time_nu=50000;
-         SCI_Tx(scix, buff,10);
-            while(time_nu--);
-            time_nu=30000;
-            SCI_Tx(scix, buff,20);
-            while(time_nu--);
-            time_nu=50000;
-            SCI_Tx(scix, buff,5);
-            while(time_nu--);
-            time_nu=50000;
-            SCI_Tx(scix, buff,40);
-            while(time_nu--);
-            time_nu=50000;
+         SCI_Tx(scix, buff1,20);
+         time_nu=0xfff0;
+         while(time_nu--);
+         SCI_Tx(scix, buff2,30);
+         time_nu=0xffff0;
+         while(time_nu--);
+         SCI_Tx(scix, buff3,40);
+         time_nu=0xfffff0;
     }*/
   /*     //测试SPI
     uint8 num=0;

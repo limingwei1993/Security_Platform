@@ -75,5 +75,7 @@ extern unsigned int lwIPInit(unsigned int instNum, unsigned char *macArray,
 extern void lwIPRxIntHandler(unsigned int instNum);
 extern void lwIPTxIntHandler(unsigned int instNum);
 void lwip_periodic_handle_EMAC();
+void IntMasterIRQEnable(void);
+void IntMasterIRQDisable(void);
 extern uint32_t g_ui32LocalTimer;
 #endif /* __LWIPLIB_H__ */

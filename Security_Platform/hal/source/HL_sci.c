@@ -1096,7 +1096,7 @@ void lin1HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-        byte = (uint8)(sciREG1->RD & 0x000000FFU);
+      /*  byte = (uint8)(sciREG1->RD & 0x000000FFU);
 
             if (g_sciTransfer_t[0U].rx_length > 0U)
             {
@@ -1105,10 +1105,10 @@ void lin1HighLevelInterrupt(void)
                 
                 g_sciTransfer_t[0U].rx_length--;
                 if (g_sciTransfer_t[0U].rx_length == 0U)
-                {
+                {*/
                     sciNotification(sciREG1, (uint32)SCI_RX_INT);
-                }
-            }
+            /*    }
+            }*/
         
         break;
 
@@ -1174,7 +1174,7 @@ void lin2HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-        byte = (uint8)(sciREG2->RD & 0x000000FFU);
+      /*  byte = (uint8)(sciREG2->RD & 0x000000FFU);
 
             if (g_sciTransfer_t[1U].rx_length > 0U)
             {
@@ -1182,10 +1182,10 @@ void lin2HighLevelInterrupt(void)
                 g_sciTransfer_t[1U].rx_data++;
                 g_sciTransfer_t[1U].rx_length--;
                 if (g_sciTransfer_t[1U].rx_length == 0U)
-                {
+                {*/
                     sciNotification(sciREG2, (uint32)SCI_RX_INT);
-                }
-            }
+             /*   }
+            }*/
         
         break;
 
@@ -1251,7 +1251,7 @@ void sci3HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-        byte = (uint8)(sciREG3->RD & 0x000000FFU);
+       /* byte = (uint8)(sciREG3->RD & 0x000000FFU);
 
             if (g_sciTransfer_t[2U].rx_length > 0U)
             {
@@ -1259,10 +1259,10 @@ void sci3HighLevelInterrupt(void)
                 g_sciTransfer_t[2U].rx_data++;
                 g_sciTransfer_t[2U].rx_length--;
                 if (g_sciTransfer_t[2U].rx_length == 0U)
-                {
+                {*/
                     sciNotification(sciREG3, (uint32)SCI_RX_INT);
-                }
-            }
+              /*  }
+            }*/
         
         break;
 
@@ -1328,7 +1328,7 @@ void sci4HighLevelInterrupt(void)
 
     case 11U:
         /* receive */
-        byte = (uint8)(sciREG4->RD & 0x000000FFU);
+      /*  byte = (uint8)(sciREG4->RD & 0x000000FFU);
 
             if (g_sciTransfer_t[3U].rx_length > 0U)
             {
@@ -1336,10 +1336,10 @@ void sci4HighLevelInterrupt(void)
                 g_sciTransfer_t[3U].rx_data++;
                 g_sciTransfer_t[3U].rx_length--;
                 if (g_sciTransfer_t[3U].rx_length == 0U)
-                {
+                {*/
                     sciNotification(sciREG4, (uint32)SCI_RX_INT);
-                }
-            }
+               /* }
+            }*/
         
         break;
 

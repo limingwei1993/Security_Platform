@@ -21,12 +21,8 @@ uint8 SCI1_RX_DATA[SCI1_RX_DATA_LEN]={0};  /*SCI1 DMA接收数据队列*/
 uint8 SCI2_RX_DATA[SCI2_RX_DATA_LEN]={0};  /*SCI2 DMA接收数据队列*/
 uint8 SCI3_RX_DATA[SCI3_RX_DATA_LEN]={0};  /*SCI3 DMA接收数据队列*/
 uint8 SCI4_RX_DATA[SCI4_RX_DATA_LEN]={0};  /*SCI4 DMA接收数据队列*/
-uint8 SCI1_TX_DATA[SCI1_TX_DATA_LEN]={0};  /*SCI1 DMA发送数据队列*/
-uint8 SCI2_TX_DATA[SCI2_TX_DATA_LEN]={0};  /*SCI2 DMA发送数据队列*/
-uint8 SCI3_TX_DATA[SCI3_TX_DATA_LEN]={0};  /*SCI3 DMA发送数据队列*/
-uint8 SCI4_TX_DATA[SCI4_TX_DATA_LEN]={0};  /*SCI4 DMA发送数据队列*/
 bool DMA_SCI1_TX=true;  /*SCI1 启用DMA发送数据标志*/
-bool DMA_SCI2_TX=false; /*SCI2 启用DMA发送数据标志*/
+bool DMA_SCI2_TX=true; /*SCI2 启用DMA发送数据标志*/
 bool DMA_SCI3_TX=false; /*SCI3 启用DMA发送数据标志*/
 bool DMA_SCI4_TX=false; /*SCI4 启用DMA发送数据标志*/
 bool DMA_SCI1_RX=true;  /*SCI1 启用DMA接收数据标志*/
@@ -439,14 +435,7 @@ void SCI_init(SCI_Info scix)
        }
 }
 
-g_dmaCTRL g_dmaCTRLPKT_SCI1_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI1_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI2_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI2_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI3_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI3_RX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI4_TX;             /* dma control packet configuration stack */
-g_dmaCTRL g_dmaCTRLPKT_SCI4_RX;             /* dma control packet configuration stack */
+
 /******************
  * 函数：void SCI_DMA_init(SCI_Info scix)
  * 功能：SCI DMA初始化
@@ -459,6 +448,15 @@ g_dmaCTRL g_dmaCTRLPKT_SCI4_RX;             /* dma control packet configuration 
  * *******************/
 void SCI_DMA_init(SCI_Info scix)
 {
+    uint32 SCI_TX_ADDR=0;
+    g_dmaCTRL g_dmaCTRLPKT_SCI1_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI1_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI2_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI2_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI3_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI3_RX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI4_TX;             /* dma control packet configuration stack */
+    g_dmaCTRL g_dmaCTRLPKT_SCI4_RX;             /* dma control packet configuration stack */
     switch(scix.ch)
     {
         case SCI1:
@@ -467,11 +465,11 @@ void SCI_DMA_init(SCI_Info scix)
             {
             }
             dmaReqAssign(DMA_SCI1_TRANSMIT_channel, DMA_SCI1_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_SCI1_TX.SADD      = (uint32)(SCI1_TX_DATA) ;
+            g_dmaCTRLPKT_SCI1_TX.SADD      = (uint32)(SCI_TX_ADDR) ;
             g_dmaCTRLPKT_SCI1_TX.DADD      = ((uint32_t)(&(sciREG1->TD))+3);
             g_dmaCTRLPKT_SCI1_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SCI1_TX.FRCNT = 10;
-            g_dmaCTRLPKT_SCI1_TX.ELCNT = 1;
+            g_dmaCTRLPKT_SCI1_TX.FRCNT = 0;
+            g_dmaCTRLPKT_SCI1_TX.ELCNT = 0;
             g_dmaCTRLPKT_SCI1_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SCI1_TX.ELSOFFSET = 0;
             g_dmaCTRLPKT_SCI1_TX.FRDOFFSET = 0;
@@ -486,11 +484,10 @@ void SCI_DMA_init(SCI_Info scix)
             dmaSetCtrlPacket(DMA_SCI1_TRANSMIT_channel,g_dmaCTRLPKT_SCI1_TX);
 
 
-
             dmaReqAssign(DMA_SCI1_REVICE_channel, DMA_SCI1_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_SCI1_RX.SADD      =((uint32_t)(&(sciREG1->RD))+3)  ;
             g_dmaCTRLPKT_SCI1_RX.DADD      =(uint32)(SCI1_RX_DATA) ;
-            g_dmaCTRLPKT_SCI1_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_SCI1_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_SCI1_RX.FRCNT = SCI1_RX_DATA_LEN;
             g_dmaCTRLPKT_SCI1_RX.ELCNT = 1;
             g_dmaCTRLPKT_SCI1_RX.ELDOFFSET = 0;
@@ -518,11 +515,11 @@ void SCI_DMA_init(SCI_Info scix)
             {
             }
             dmaReqAssign(DMA_SCI2_TRANSMIT_channel, DMA_SCI2_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_SCI2_TX.SADD      = (uint32)(SCI2_TX_DATA) ;
+            g_dmaCTRLPKT_SCI2_TX.SADD      = (uint32)(SCI_TX_ADDR) ;
             g_dmaCTRLPKT_SCI2_TX.DADD      = ((uint32_t)(&(sciREG2->TD))+3);
             g_dmaCTRLPKT_SCI2_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SCI2_TX.FRCNT = 8;
-            g_dmaCTRLPKT_SCI2_TX.ELCNT = 1;
+            g_dmaCTRLPKT_SCI2_TX.FRCNT = 0;
+            g_dmaCTRLPKT_SCI2_TX.ELCNT = 0;
             g_dmaCTRLPKT_SCI2_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SCI2_TX.ELSOFFSET = 0;
             g_dmaCTRLPKT_SCI2_TX.FRDOFFSET = 0;
@@ -541,7 +538,7 @@ void SCI_DMA_init(SCI_Info scix)
             dmaReqAssign(DMA_SCI2_REVICE_channel, DMA_SCI2_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_SCI2_RX.SADD      =((uint32_t)(&(sciREG2->RD))+3)  ;
             g_dmaCTRLPKT_SCI2_RX.DADD      =(uint32)(SCI2_RX_DATA) ;
-            g_dmaCTRLPKT_SCI2_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_SCI2_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_SCI2_RX.FRCNT = SCI2_RX_DATA_LEN;
             g_dmaCTRLPKT_SCI2_RX.ELCNT = 1;
             g_dmaCTRLPKT_SCI2_RX.ELDOFFSET = 0;
@@ -567,11 +564,11 @@ void SCI_DMA_init(SCI_Info scix)
             {
             }
             dmaReqAssign(DMA_SCI3_TRANSMIT_channel, DMA_SCI3_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_SCI3_TX.SADD      = (uint32)(SCI3_TX_DATA) ;
+            g_dmaCTRLPKT_SCI3_TX.SADD      = (uint32)(SCI_TX_ADDR) ;
             g_dmaCTRLPKT_SCI3_TX.DADD      = ((uint32_t)(&(sciREG3->TD))+3);
             g_dmaCTRLPKT_SCI3_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SCI3_TX.FRCNT = 8;
-            g_dmaCTRLPKT_SCI3_TX.ELCNT = 1;
+            g_dmaCTRLPKT_SCI3_TX.FRCNT = 0;
+            g_dmaCTRLPKT_SCI3_TX.ELCNT = 0;
             g_dmaCTRLPKT_SCI3_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SCI3_TX.ELSOFFSET = 0;
             g_dmaCTRLPKT_SCI3_TX.FRDOFFSET = 0;
@@ -590,7 +587,7 @@ void SCI_DMA_init(SCI_Info scix)
             dmaReqAssign(DMA_SCI3_REVICE_channel, DMA_SCI3_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_SCI3_RX.SADD      =((uint32_t)(&(sciREG3->RD))+3)  ;
             g_dmaCTRLPKT_SCI3_RX.DADD      =(uint32)(SCI3_RX_DATA) ;
-            g_dmaCTRLPKT_SCI3_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_SCI3_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_SCI3_RX.FRCNT = SCI3_RX_DATA_LEN;
             g_dmaCTRLPKT_SCI3_RX.ELCNT = 1;
             g_dmaCTRLPKT_SCI3_RX.ELDOFFSET = 0;
@@ -616,11 +613,11 @@ void SCI_DMA_init(SCI_Info scix)
             {
             }
             dmaReqAssign(DMA_SCI4_TRANSMIT_channel, DMA_SCI4_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_SCI4_TX.SADD      = (uint32)(SCI4_TX_DATA) ;
+            g_dmaCTRLPKT_SCI4_TX.SADD      = (uint32)(SCI_TX_ADDR) ;
             g_dmaCTRLPKT_SCI4_TX.DADD      = ((uint32_t)(&(sciREG4->TD))+3);
             g_dmaCTRLPKT_SCI4_TX.CHCTRL    = 0;
-            g_dmaCTRLPKT_SCI4_TX.FRCNT = 8;
-            g_dmaCTRLPKT_SCI4_TX.ELCNT = 1;
+            g_dmaCTRLPKT_SCI4_TX.FRCNT = 0;
+            g_dmaCTRLPKT_SCI4_TX.ELCNT = 0;
             g_dmaCTRLPKT_SCI4_TX.ELDOFFSET = 0;
             g_dmaCTRLPKT_SCI4_TX.ELSOFFSET = 0;
             g_dmaCTRLPKT_SCI4_TX.FRDOFFSET = 0;
@@ -639,7 +636,7 @@ void SCI_DMA_init(SCI_Info scix)
             dmaReqAssign(DMA_SCI4_REVICE_channel, DMA_SCI4_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_SCI4_RX.SADD      =((uint32_t)(&(sciREG4->RD))+3)  ;
             g_dmaCTRLPKT_SCI4_RX.DADD      =(uint32)(SCI4_RX_DATA) ;
-            g_dmaCTRLPKT_SCI4_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_SCI4_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_SCI4_RX.FRCNT = SCI1_RX_DATA_LEN;
             g_dmaCTRLPKT_SCI4_RX.ELCNT = 1;
             g_dmaCTRLPKT_SCI4_RX.ELDOFFSET = 0;
@@ -676,6 +673,7 @@ void SCI_DMA_init(SCI_Info scix)
  *     len ：发送的数据长度。
  * 输出：无
  * *******************/
+uint32 stats=0;
 void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
 {
     uint8 i=0;
@@ -685,16 +683,12 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
     case SCI1:
         if(DMA_SCI1_TX==true)
         {
-            for(i=0;i<len;i++)
-            {
-               SCI1_TX_DATA[i]=buff[i];
-            }
-            while (((sciREG1->FLR & SCI_TX_INT) == 0U) || ((sciREG1->FLR & 0x4) == 0x4));
 
-    //        g_dmaCTRLPKT_SCI1_TX.FRCNT = len;
-    //        dmaSetCtrlPacket(DMA_SCI1_TRANSMIT_channel,g_dmaCTRLPKT_SCI1_TX);
+            while ((sciREG1->FLR & SCI_TX_INT) == 0U || (dmaREG->PEND & (1<<DMA_SCI1_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SCI1_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SCI1_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SCI1_TRANSMIT_channel, DMA_HW);
-
+            sciREG1->TD=(uint32)buff[0];
         }
         else
         {
@@ -712,11 +706,11 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
     case SCI2:
         if(DMA_SCI2_TX==true)
         {
-            for(i=0;i<len;i++)
-            {
-               SCI2_TX_DATA[i]=buff[i];
-            }
+            while ((sciREG2->FLR & SCI_TX_INT) == 0U || (dmaREG->PEND & (1<<DMA_SCI2_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SCI2_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SCI2_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SCI2_TRANSMIT_channel, DMA_HW);
+            sciREG2->TD=(uint32)buff[0];
         }
         else
         {
@@ -734,11 +728,11 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
     case SCI3:
         if(DMA_SCI3_TX==true)
         {
-            for(i=0;i<len;i++)
-            {
-               SCI3_TX_DATA[i]=buff[i];
-            }
+            while ((sciREG3->FLR & SCI_TX_INT) == 0U || (dmaREG->PEND & (1<<DMA_SCI3_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SCI3_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SCI3_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SCI3_TRANSMIT_channel, DMA_HW);
+            sciREG3->TD=(uint32)buff[0];
         }
         else
         {
@@ -756,11 +750,11 @@ void SCI_Tx(SCI_Info scix, uint8*buff,uint32 len)
     case SCI4:
         if(DMA_SCI4_TX==true)
         {
-            for(i=0;i<len;i++)
-            {
-               SCI4_TX_DATA[i]=buff[i];
-            }
+            while ((sciREG3->FLR & SCI_TX_INT) == 0U || (dmaREG->PEND & (1<<DMA_SCI3_TRANSMIT_channel))==0);
+            dmaRAMREG->PCP[DMA_SCI4_TRANSMIT_channel].ISADDR  = (uint32_t)(buff)+1;
+            dmaRAMREG->PCP[DMA_SCI4_TRANSMIT_channel].ITCOUNT = ((len-1) << 16U) | 1;
             dmaSetChEnable(DMA_SCI4_TRANSMIT_channel, DMA_HW);
+            sciREG4->TD=(uint32)buff[0];
         }
         else
         {

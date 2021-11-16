@@ -75,10 +75,6 @@ extern uint8 SCI1_RX_DATA[SCI1_RX_DATA_LEN];
 extern uint8 SCI2_RX_DATA[SCI2_RX_DATA_LEN];
 extern uint8 SCI3_RX_DATA[SCI3_RX_DATA_LEN];
 extern uint8 SCI4_RX_DATA[SCI4_RX_DATA_LEN];
-extern uint8 SCI1_TX_DATA[SCI1_TX_DATA_LEN];
-extern uint8 SCI2_TX_DATA[SCI2_TX_DATA_LEN];
-extern uint8 SCI3_TX_DATA[SCI3_TX_DATA_LEN];
-extern uint8 SCI4_TX_DATA[SCI4_TX_DATA_LEN];
 
 void SCI2_IO_Configure(void);
 void SCI_init(SCI_Info scix);

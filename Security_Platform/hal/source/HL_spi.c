@@ -153,7 +153,7 @@ void spiInit(void)
     /** - enable interrupts */
     spiREG1->INT0 = (spiREG1->INT0 & 0xFFFF0000U)
                   | (uint32)((uint32)0U << 9U)  /* TXINT */
-                  | (uint32)((uint32)0U << 8U)  /* RXINT */
+                  | (uint32)((uint32)1U << 8U)  /* RXINT */
                   | (uint32)((uint32)0U << 6U)  /* OVRNINT */
                   | (uint32)((uint32)0U << 4U)  /* BITERR */
                   | (uint32)((uint32)0U << 3U)  /* DESYNC */
@@ -333,7 +333,7 @@ void spiInit(void)
     /** - enable interrupts */
     spiREG2->INT0 = (spiREG2->INT0 & 0xFFFF0000U)
                   | (uint32)((uint32)0U << 9U)  /* TXINT */
-                  | (uint32)((uint32)0U << 8U)  /* RXINT */
+                  | (uint32)((uint32)1U << 8U)  /* RXINT */
                   | (uint32)((uint32)0U << 6U)  /* OVRNINT */
                   | (uint32)((uint32)0U << 4U)  /* BITERR */
                   | (uint32)((uint32)0U << 3U)  /* DESYNC */
@@ -477,7 +477,7 @@ void spiInit(void)
     /** - enable interrupts */
     spiREG3->INT0 = (spiREG3->INT0 & 0xFFFF0000U)
                   | (uint32)((uint32)0U << 9U)  /* TXINT */
-                  | (uint32)((uint32)0U << 8U)  /* RXINT */
+                  | (uint32)((uint32)1U << 8U)  /* RXINT */
                   | (uint32)((uint32)0U << 6U)  /* OVRNINT */
                   | (uint32)((uint32)0U << 4U)  /* BITERR */
                   | (uint32)((uint32)0U << 3U)  /* DESYNC */
@@ -646,7 +646,7 @@ void spiInit(void)
     /** - enable interrupts */
     spiREG4->INT0 = (spiREG4->INT0 & 0xFFFF0000U)
                   | (uint32)((uint32)0U << 9U)  /* TXINT */
-                  | (uint32)((uint32)0U << 8U)  /* RXINT */
+                  | (uint32)((uint32)1U << 8U)  /* RXINT */
                   | (uint32)((uint32)0U << 6U)  /* OVRNINT */
                   | (uint32)((uint32)0U << 4U)  /* BITERR */
                   | (uint32)((uint32)0U << 3U)  /* DESYNC */
@@ -814,7 +814,7 @@ void spiInit(void)
     /** - enable interrupts */
     spiREG5->INT0 = (spiREG5->INT0 & 0xFFFF0000U)
                   | (uint32)((uint32)0U << 9U)  /* TXINT */
-                  | (uint32)((uint32)0U << 8U)  /* RXINT */
+                  | (uint32)((uint32)1U << 8U)  /* RXINT */
                   | (uint32)((uint32)0U << 6U)  /* OVRNINT */
                   | (uint32)((uint32)0U << 4U)  /* BITERR */
                   | (uint32)((uint32)0U << 3U)  /* DESYNC */
@@ -1704,20 +1704,20 @@ void mibspi1HighLevelInterrupt(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-            //    uint16 *destbuff;
-           //     destbuff = g_spiPacket_t[0U].rxdata_ptr;
+              /*  uint16 *destbuff;
+                destbuff = g_spiPacket_t[0U].rxdata_ptr;
 
-           //     *destbuff = (uint16)spiREG1->BUF;
+                *destbuff = (uint16)spiREG1->BUF;*/
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-           //     g_spiPacket_t[0U].rxdata_ptr++;
-           //     g_spiPacket_t[0U].rx_length--;
+             /*   g_spiPacket_t[0U].rxdata_ptr++;
+                g_spiPacket_t[0U].rx_length--;
 
-            //    if(g_spiPacket_t[0U].rx_length == 0U)
-           //     {
-            //        spiREG1->INT0 = (spiREG1->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-            //        g_spiPacket_t[0U].rx_data_status = SPI_COMPLETED;
+                if(g_spiPacket_t[0U].rx_length == 0U)
+                {
+                    spiREG1->INT0 = (spiREG1->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
+                    g_spiPacket_t[0U].rx_data_status = SPI_COMPLETED;*/
                     spiEndNotification(spiREG1);
-            //    }
+              /*  }*/
                 break;
              }
 
@@ -1806,20 +1806,20 @@ void spi2HighLevelInterrupt(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-                uint16 *destbuff;
+             /*   uint16 *destbuff;
                 destbuff = g_spiPacket_t[1U].rxdata_ptr;
 
-                *destbuff = (uint16)spiREG2->BUF;
+                *destbuff = (uint16)spiREG2->BUF;*/
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-                g_spiPacket_t[1U].rxdata_ptr++;
+              /*  g_spiPacket_t[1U].rxdata_ptr++;
                 g_spiPacket_t[1U].rx_length--;
 
                 if(g_spiPacket_t[1U].rx_length == 0U)
                 {
                     spiREG2->INT0 = (spiREG2->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-                    g_spiPacket_t[1U].rx_data_status = SPI_COMPLETED;
+                    g_spiPacket_t[1U].rx_data_status = SPI_COMPLETED;*/
                     spiEndNotification(spiREG2);
-                }
+              /*  }*/
                 break;
              }
 
@@ -1910,20 +1910,20 @@ void mibspi3HighInterruptLevel(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-                uint16 *destbuff;
+              /*  uint16 *destbuff;
                 destbuff = g_spiPacket_t[2U].rxdata_ptr;
 
-                *destbuff = (uint16)spiREG3->BUF;
+                *destbuff = (uint16)spiREG3->BUF;*/
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-                g_spiPacket_t[2U].rxdata_ptr++;
+               /* g_spiPacket_t[2U].rxdata_ptr++;
                 g_spiPacket_t[2U].rx_length--;
 
                 if(g_spiPacket_t[2U].rx_length == 0U)
                 {
                     spiREG3->INT0 = (spiREG3->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-                    g_spiPacket_t[2U].rx_data_status = SPI_COMPLETED;
+                    g_spiPacket_t[2U].rx_data_status = SPI_COMPLETED;*/
                     spiEndNotification(spiREG3);
-                }
+               /* }*/
                 break;
              }
 
@@ -2013,20 +2013,20 @@ void mibspi4HighLevelInterrupt(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-               uint16 *destbuff;
+             /*  uint16 *destbuff;
                 destbuff = g_spiPacket_t[3U].rxdata_ptr;
 
-                *destbuff = (uint16)spiREG4->BUF;
+                *destbuff = (uint16)spiREG4->BUF;*/
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-                g_spiPacket_t[3U].rxdata_ptr++;
+             /*   g_spiPacket_t[3U].rxdata_ptr++;
                 g_spiPacket_t[3U].rx_length--;
 
                 if(g_spiPacket_t[3U].rx_length == 0U)
                 {
                     spiREG4->INT0 = (spiREG4->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-                    g_spiPacket_t[3U].rx_data_status = SPI_COMPLETED;
+                    g_spiPacket_t[3U].rx_data_status = SPI_COMPLETED;*/
                     spiEndNotification(spiREG4);
-                }
+                /*}*/
                 break;
              }
 
@@ -2117,20 +2117,20 @@ void mibspi5HighLevelInterrupt(void)
 
     case 0x24U: /* Receive Buffer Full Interrupt */
              {
-                uint16 *destbuff;
+               /* uint16 *destbuff;
                 destbuff = g_spiPacket_t[4U].rxdata_ptr;
 
-                *destbuff = (uint16)spiREG5->BUF;
+                *destbuff = (uint16)spiREG5->BUF;*/
                 /*SAFETYMCUSW 567 S MR:17.1,17.4 <APPROVED> "Pointer increment needed" */
-                g_spiPacket_t[4U].rxdata_ptr++;
+              /*  g_spiPacket_t[4U].rxdata_ptr++;
                 g_spiPacket_t[4U].rx_length--;
 
                 if(g_spiPacket_t[4U].rx_length == 0U)
                 {
                     spiREG5->INT0 = (spiREG5->INT0 & 0x0000FFFFU) & (~(uint32)0x0100U);
-                    g_spiPacket_t[4U].rx_data_status = SPI_COMPLETED;
+                    g_spiPacket_t[4U].rx_data_status = SPI_COMPLETED;*/
                     spiEndNotification(spiREG5);
-                }
+               /* }*/
                 break;
              }
 

@@ -11,31 +11,16 @@
 #include "HL_sys_dma.h"
 
 uint8 static s_canByteOrder[8U] = {3U, 2U, 1U, 0U, 7U, 6U, 5U, 4U}; /*用于CAN发送数据时使用，定位字节的位顺序*/
-uint8 CAN1_RX_DATA[CAN1_RX_DATA_LEN]; /*CAN1 保存DMA接收到的数据*/
+uint8 CAN1_RX_DATA[CAN1_RX_DATA_LEN]; /*CAN1 保存DMA接收到的数据.后8个字节是数据，前4个字节组成ID。*/
+/*ID=((CAN1_RX_DATA[0]&0x01)<<28) | (CAN1_RX_DATA[1]<<16) | (CAN1_RX_DATA[2]<<8) | (CAN1_RX_DATA[3])*/
 uint8 CAN2_RX_DATA[CAN2_RX_DATA_LEN]; /*CAN2 保存DMA接收到的数据*/
 uint8 CAN3_RX_DATA[CAN3_RX_DATA_LEN]; /*CAN3 保存DMA接收到的数据*/
 uint8 CAN4_RX_DATA[CAN4_RX_DATA_LEN]; /*CAN4 保存DMA接收到的数据*/
-uint8 CAN1_TX_DATA[CAN1_TX_DATA_LEN]; /*CAN1 DMA往外发出的数据*/
-uint8 CAN2_TX_DATA[CAN2_TX_DATA_LEN]; /*CAN2 DMA往外发出的数据*/
-uint8 CAN3_TX_DATA[CAN3_TX_DATA_LEN]; /*CAN3 DMA往外发出的数据*/
-uint8 CAN4_TX_DATA[CAN4_TX_DATA_LEN]; /*CAN4 DMA往外发出的数据*/
-bool DMA_CAN1_TX=true;   /*CAN1 启用DMA发送的标志；true--使用、false--不使用*/
-bool DMA_CAN2_TX=false;  /*CAN2 启用DMA发送的标志；true--使用、false--不使用*/
-bool DMA_CAN3_TX=false;  /*CAN3 启用DMA发送的标志；true--使用、false--不使用*/
-bool DMA_CAN4_TX=false;  /*CAN4 启用DMA发送的标志；true--使用、false--不使用*/
 bool DMA_CAN1_RX=true;   /*CAN1 启用DMA接收的标志；true--使用、false--不使用*/
 bool DMA_CAN2_RX=true;   /*CAN2 启用DMA接收的标志；true--使用、false--不使用*/
 bool DMA_CAN3_RX=true;   /*CAN3 启用DMA接收的标志；true--使用、false--不使用*/
 bool DMA_CAN4_RX=true;   /*CAN4 启用DMA接收的标志；true--使用、false--不使用*/
 
-g_dmaCTRL g_dmaCTRLPKT_CAN1_TX;             /* CAN1 发送数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN1_RX;             /* CAN1 接收数据的DMA配置句柄*/
-g_dmaCTRL g_dmaCTRLPKT_CAN2_TX;             /* CAN2 发送数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN2_RX;             /* CAN2 接收数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN3_TX;             /* CAN3 发送数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN3_RX;             /* CAN3 接收数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN4_TX;             /* CAN4 发送数据的DMA配置句柄 */
-g_dmaCTRL g_dmaCTRLPKT_CAN4_RX;             /* CAN4 接收数据的DMA配置句柄 */
 /*CAN1 消息邮箱分配表*/
 CAN_McanMESSAGE_BOX CAN1_McanMESSAGE_BOX_TABLE[CAN_MCANMESSAGE_BOX_NUM]={{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
                                                                         {0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},{0,0},
@@ -4915,12 +4900,20 @@ void CAN_init(CAN_Info canx)
  * *******************/
 void CAN_DMA_init(CAN_Info canx)
 {
-
+    g_dmaCTRL g_dmaCTRLPKT_CAN1_TX;             /* CAN1 发送数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN1_RX;             /* CAN1 接收数据的DMA配置句柄*/
+    g_dmaCTRL g_dmaCTRLPKT_CAN2_TX;             /* CAN2 发送数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN2_RX;             /* CAN2 接收数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN3_TX;             /* CAN3 发送数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN3_RX;             /* CAN3 接收数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN4_TX;             /* CAN4 发送数据的DMA配置句柄 */
+    g_dmaCTRL g_dmaCTRLPKT_CAN4_RX;             /* CAN4 接收数据的DMA配置句柄 */
+    uint32 CAN_TX_DATA[20]={0};
     switch(canx.ch)
     {
         case CAN1:
             dmaReqAssign(DMA_CAN1_TRANSMIT_channel, DMA_CAN1_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_CAN1_TX.SADD      = (uint32)(CAN1_TX_DATA) ;
+            g_dmaCTRLPKT_CAN1_TX.SADD      = (uint32)(CAN_TX_DATA) ;
             g_dmaCTRLPKT_CAN1_TX.DADD      = ((uint32_t)((canREG1->IF1DATx)));
             g_dmaCTRLPKT_CAN1_TX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN1_TX.FRCNT = 1;
@@ -4938,12 +4931,12 @@ void CAN_DMA_init(CAN_Info canx)
             g_dmaCTRLPKT_CAN1_TX.AUTOINIT  = AUTOINIT_OFF;
 
             dmaSetCtrlPacket(DMA_CAN1_TRANSMIT_channel,g_dmaCTRLPKT_CAN1_TX);
-
+            dmaEnableInterrupt(DMA_CAN1_TRANSMIT_channel, BTC, DMA_INTA);
 
             dmaReqAssign(DMA_CAN1_REVICE_channel, DMA_CAN1_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_CAN1_RX.SADD      =((uint32_t)(&(canREG1->IF3ARB)))  ;
             g_dmaCTRLPKT_CAN1_RX.DADD      =(uint32)(CAN1_RX_DATA) ;
-            g_dmaCTRLPKT_CAN1_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_CAN1_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN1_RX.FRCNT = 1;
             g_dmaCTRLPKT_CAN1_RX.ELCNT = 2;
             g_dmaCTRLPKT_CAN1_RX.ELDOFFSET = 0;
@@ -4968,7 +4961,7 @@ void CAN_DMA_init(CAN_Info canx)
         break;
         case CAN2:
             dmaReqAssign(DMA_CAN2_TRANSMIT_channel, DMA_CAN2_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_CAN2_TX.SADD      = (uint32)(CAN2_TX_DATA) ;
+            g_dmaCTRLPKT_CAN2_TX.SADD      = (uint32)(CAN_TX_DATA) ;
             g_dmaCTRLPKT_CAN2_TX.DADD      = ((uint32_t)(&(canREG2->IF1DATx)));
             g_dmaCTRLPKT_CAN2_TX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN2_TX.FRCNT = 1;
@@ -4986,12 +4979,12 @@ void CAN_DMA_init(CAN_Info canx)
             g_dmaCTRLPKT_CAN2_TX.AUTOINIT  = AUTOINIT_OFF;
 
             dmaSetCtrlPacket(DMA_CAN2_TRANSMIT_channel,g_dmaCTRLPKT_CAN2_TX);
-
+            dmaEnableInterrupt(DMA_CAN2_TRANSMIT_channel, BTC, DMA_INTA);
 
             dmaReqAssign(DMA_CAN2_REVICE_channel, DMA_CAN2_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_CAN2_RX.SADD      =((uint32_t)(&(canREG2->IF3ARB)))  ;
             g_dmaCTRLPKT_CAN2_RX.DADD      =(uint32)(CAN2_RX_DATA) ;
-            g_dmaCTRLPKT_CAN2_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_CAN2_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN2_RX.FRCNT = 1;
             g_dmaCTRLPKT_CAN2_RX.ELCNT = 2;
             g_dmaCTRLPKT_CAN2_RX.ELDOFFSET = 0;
@@ -5016,7 +5009,7 @@ void CAN_DMA_init(CAN_Info canx)
 
         case CAN3:
             dmaReqAssign(DMA_CAN3_TRANSMIT_channel, DMA_CAN3_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_CAN3_TX.SADD      = (uint32)(CAN3_TX_DATA) ;
+            g_dmaCTRLPKT_CAN3_TX.SADD      = (uint32)(CAN_TX_DATA) ;
             g_dmaCTRLPKT_CAN3_TX.DADD      = ((uint32_t)(&(canREG3->IF1DATx)));
             g_dmaCTRLPKT_CAN3_TX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN3_TX.FRCNT = 1;
@@ -5034,12 +5027,12 @@ void CAN_DMA_init(CAN_Info canx)
             g_dmaCTRLPKT_CAN3_TX.AUTOINIT  = AUTOINIT_OFF;
 
             dmaSetCtrlPacket(DMA_CAN3_TRANSMIT_channel,g_dmaCTRLPKT_CAN3_TX);
-
+            dmaEnableInterrupt(DMA_CAN3_TRANSMIT_channel, BTC, DMA_INTA);
 
             dmaReqAssign(DMA_CAN3_REVICE_channel, DMA_CAN3_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_CAN3_RX.SADD      =((uint32_t)(&(canREG3->IF3ARB)))  ;
             g_dmaCTRLPKT_CAN3_RX.DADD      =(uint32)(CAN3_RX_DATA) ;
-            g_dmaCTRLPKT_CAN3_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_CAN3_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN3_RX.FRCNT = 1;
             g_dmaCTRLPKT_CAN3_RX.ELCNT = 2;
             g_dmaCTRLPKT_CAN3_RX.ELDOFFSET = 0;
@@ -5065,7 +5058,7 @@ void CAN_DMA_init(CAN_Info canx)
         break;
         case CAN4:
             dmaReqAssign(DMA_CAN4_TRANSMIT_channel, DMA_CAN4_TRANSMIT_REQUEST_LINE);
-            g_dmaCTRLPKT_CAN4_TX.SADD      = (uint32)(CAN4_TX_DATA) ;
+            g_dmaCTRLPKT_CAN4_TX.SADD      = (uint32)(CAN_TX_DATA) ;
             g_dmaCTRLPKT_CAN4_TX.DADD      = ((uint32_t)(&(canREG4->IF1DATx)));
             g_dmaCTRLPKT_CAN4_TX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN4_TX.FRCNT = 1;
@@ -5083,12 +5076,12 @@ void CAN_DMA_init(CAN_Info canx)
             g_dmaCTRLPKT_CAN4_TX.AUTOINIT  = AUTOINIT_OFF;
 
             dmaSetCtrlPacket(DMA_CAN4_TRANSMIT_channel,g_dmaCTRLPKT_CAN4_TX);
-
+            dmaEnableInterrupt(DMA_CAN4_TRANSMIT_channel, BTC, DMA_INTA);
 
             dmaReqAssign(DMA_CAN4_REVICE_channel, DMA_CAN4_REVICE_REQUEST_LINE);
             g_dmaCTRLPKT_CAN4_RX.SADD      =((uint32_t)(&(canREG4->IF3ARB)))  ;
             g_dmaCTRLPKT_CAN4_RX.DADD      =(uint32)(CAN4_RX_DATA) ;
-            g_dmaCTRLPKT_CAN4_RX.CHCTRL    = 1;
+            g_dmaCTRLPKT_CAN4_RX.CHCTRL    = 0;
             g_dmaCTRLPKT_CAN4_RX.FRCNT = 1;
             g_dmaCTRLPKT_CAN4_RX.ELCNT = 2;
             g_dmaCTRLPKT_CAN4_RX.ELDOFFSET = 0;
@@ -5135,94 +5128,48 @@ void CAN_Tx(CAN_Info canx,uint32 ID,uint8* buff,uint32 len)
     switch(canx.ch)
     {
     case CAN1:
-        if( DMA_CAN1_TX==true)
-        {
-            for(i=0;i<len;i++)
-            {
-                CAN1_TX_DATA[s_canByteOrder[i]]=buff[i];
-            }
-            dmaSetChEnable(DMA_CAN1_TRANSMIT_channel, DMA_HW);
-
-        }
-        else
-        {
-           canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
-           do {
-                  ret = canTransmit(canREG1, canMcanMESSAGE_BOX, buff);
-                  if (ret == 0U) {
-                      int16_t i = 1000U;
-                      while (i > 0) i--;
-                  }
-                  trytimes--;
-              } while ((ret == 0U) && (trytimes > 0U));
-        }
+       canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
+       do {
+              ret = canTransmit(canREG1, canMcanMESSAGE_BOX, buff);
+              if (ret == 0U) {
+                  int16_t i = 1000U;
+                  while (i > 0) i--;
+              }
+              trytimes--;
+          } while ((ret == 0U) && (trytimes > 0U));
     break;
     case CAN2:
-        if( DMA_CAN1_TX==true)
-        {
-            for(i=0;i<len;i++)
-            {
-                CAN2_TX_DATA[s_canByteOrder[i]]=buff[i];
-            }
-            dmaSetChEnable(DMA_CAN2_TRANSMIT_channel, DMA_HW);
-        }
-        else
-        {
+        canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
+        do {
+               ret = canTransmit(canREG2, canMcanMESSAGE_BOX, buff);
+               if (ret == 0U) {
+                   int16_t i = 1000U;
+                   while (i > 0) i--;
+               }
+               trytimes--;
+           } while ((ret == 0U) && (trytimes > 0U));
 
-            canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
-            do {
-                   ret = canTransmit(canREG2, canMcanMESSAGE_BOX, buff);
-                   if (ret == 0U) {
-                       int16_t i = 1000U;
-                       while (i > 0) i--;
-                   }
-                   trytimes--;
-               } while ((ret == 0U) && (trytimes > 0U));
-        }
-        break;
     case CAN3:
-        if( DMA_CAN3_TX==true)
-        {
-            for(i=0;i<len;i++)
-            {
-                CAN3_TX_DATA[s_canByteOrder[i]]=buff[i];
-            }
-            dmaSetChEnable(DMA_CAN3_TRANSMIT_channel, DMA_HW);
-        }
-        else
-        {
-            canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
-            do {
-                   ret = canTransmit(canREG3, canMcanMESSAGE_BOX, buff);
-                   if (ret == 0U) {
-                       int16_t i = 1000U;
-                       while (i > 0) i--;
-                   }
-                   trytimes--;
-               } while ((ret == 0U) && (trytimes > 0U));
-        }
+        canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
+        do {
+               ret = canTransmit(canREG3, canMcanMESSAGE_BOX, buff);
+               if (ret == 0U) {
+                   int16_t i = 1000U;
+                   while (i > 0) i--;
+               }
+               trytimes--;
+           } while ((ret == 0U) && (trytimes > 0U));
         break;
     case CAN4:
-        if( DMA_CAN4_TX==true)
-        {
-            for(i=0;i<len;i++)
-            {
-                CAN4_TX_DATA[s_canByteOrder[i]]=buff[i];
-            }
-            dmaSetChEnable(DMA_CAN4_TRANSMIT_channel, DMA_HW);
-        }
-        else
-        {
-            canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
-            do {
-                   ret = canTransmit(canREG4, canMcanMESSAGE_BOX, buff);
-                   if (ret == 0U) {
-                       int16_t i = 1000U;
-                       while (i > 0) i--;
-                   }
-                   trytimes--;
-               } while ((ret == 0U) && (trytimes > 0U));
-        }
+        canMcanMESSAGE_BOX=Get_CanMcanMESSAGE_BOX_Num(canx,ID);
+        do {
+               ret = canTransmit(canREG4, canMcanMESSAGE_BOX, buff);
+               if (ret == 0U) {
+                   int16_t i = 1000U;
+                   while (i > 0) i--;
+               }
+               trytimes--;
+           } while ((ret == 0U) && (trytimes > 0U));
         break;
     default:
         break;
@@ -5456,7 +5403,6 @@ void canMessageNotification(canBASE_t *node, uint32 messageBox)
     {
         while (!canIsRxMessageArrived(node, canMESSAGE_BOX64));
         canGetData(node, canMESSAGE_BOX64, revdata);
-        //dmaSetChEnable(DMA_CAN1_REVICE_CHANNEL,DMA_HW);
         uint32 canrevID = canGetID(node, canMESSAGE_BOX64);
         CAN1_revive(canrevID,revdata);
     }
@@ -5464,7 +5410,6 @@ void canMessageNotification(canBASE_t *node, uint32 messageBox)
     {
         while (!canIsRxMessageArrived(node, canMESSAGE_BOX64));
        canGetData(node, canMESSAGE_BOX64, revdata);
-       //dmaSetChEnable(DMA_CAN2_REVICE_CHANNEL,DMA_HW);
        uint32 canrevID = canGetID(node, canMESSAGE_BOX64);
        CAN2_revive(canrevID,revdata);
     }
@@ -5472,7 +5417,6 @@ void canMessageNotification(canBASE_t *node, uint32 messageBox)
     {
         while (!canIsRxMessageArrived(node, canMESSAGE_BOX64));
        canGetData(node, canMESSAGE_BOX64, revdata);
-       //dmaSetChEnable(DMA_CAN3_REVICE_CHANNEL,DMA_HW);
        uint32 canrevID = canGetID(node, canMESSAGE_BOX64);
        CAN3_revive(canrevID,revdata);
     }
@@ -5480,7 +5424,6 @@ void canMessageNotification(canBASE_t *node, uint32 messageBox)
     {
         while (!canIsRxMessageArrived(node, canMESSAGE_BOX64));
        canGetData(node, canMESSAGE_BOX64, revdata);
-       //dmaSetChEnable(DMA_CAN4_REVICE_CHANNEL,DMA_HW);
        uint32 canrevID = canGetID(node, canMESSAGE_BOX64);
        CAN4_revive(canrevID,revdata);
     }

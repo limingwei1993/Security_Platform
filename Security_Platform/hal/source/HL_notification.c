@@ -102,6 +102,8 @@ void esmGroup3Notification(esmBASE_t *esm, uint32 channel)
 }
 
 /* USER CODE BEGIN (7) */
+#include "can.h"
+#include "HL_reg_can.h"
 /* USER CODE END */
 
 #pragma WEAK(dmaGroupANotification)
@@ -109,6 +111,10 @@ void dmaGroupANotification(dmaInterrupt_t inttype, uint32 channel)
 {
 /*  enter user code between the USER CODE BEGIN and USER CODE END. */
 /* USER CODE BEGIN (8) */
+    if(inttype==BTC && channel==DMA_CAN1_TRANSMIT_channel)
+    {
+
+    }
 /* USER CODE END */
 }
 

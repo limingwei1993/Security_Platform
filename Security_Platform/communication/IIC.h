@@ -49,4 +49,12 @@ static struct g_i2cTransfer /*IIC 数据配置参数*/
     uint8   * data;
 } g_i2cTransfer_t[2U];
 
+void IIC_init(IIC_Info iicx);
+void ICC_DMA_init(IIC_Info iicx);
+void IIC_ADD8_write(IIC_Info iicx, uint8 addr, uint8* buff, uint32 len);
+void IIC_ADD16_write(IIC_Info iicx, uint16 addr, uint8* buff, uint32 len);
+void IIC_ADD32_write(IIC_Info iicx, uint32 addr, uint8* buff, uint32 len);
+void IIC_ADD8_read(IIC_Info iicx, uint8 addr, uint8* buff,uint32 len);
+void IIC_ADD16_read(IIC_Info iicx, uint16 addr, uint8* buff,uint32 len);
+void IIC_ADD32_read(IIC_Info iicx, uint32 addr, uint8* buff,uint32 len);
 #endif /* COMMUNICATION_IIC_H_ */

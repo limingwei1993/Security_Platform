@@ -10,8 +10,6 @@
 #include"HL_reg_adc.h"
 #include "HL_reg_dma.h"
 #include "HL_sys_dma.h"
-g_dmaCTRL g_dmaCTRLPKT_ADC1_Single;    /*ADC单次转换的DMA配置句柄*/
-g_dmaCTRL g_dmaCTRLPKT_ADC1_Continues; /*ADC连续转换的DMA配置句柄*/
 uint8_t DMA_ADC1_Single_REQUEST_LINE[3]={DMA_REQ7,DMA_REQ10,DMA_REQ11};/*ADC连续转换的DMA中断线*/
 uint8_t DMA_ADC1_Continues_REQUEST_LINE[3]={DMA_REQ7,DMA_REQ10,DMA_REQ11};/*ADC连续转换的DMA中断线*/
 extern  uint32 s_adcSelect[2U][3U];    /*ADC采样的通道标志，【2】--ADC1、ADC2；【3】--EVENT、goup1、group2*/
@@ -299,6 +297,7 @@ void ADC_DMA_Single_Channel_init(ADC_Single_Channel_Info* pch)
 {
     uint8 i=0;
     uint8 CH_num=0;
+    g_dmaCTRL g_dmaCTRLPKT_ADC1_Single;    /*ADC单次转换的DMA配置句柄*/
     for(i=0;i<32;i++)
     {
         if(( 0x0001 << i) &pch->ch)
@@ -360,6 +359,7 @@ void ADC_DMA_Continues_Channel_init(ADC_Continues_Channel_Info * pch)
 {
     uint8 i=0;
     uint8 CH_num=0;
+    g_dmaCTRL g_dmaCTRLPKT_ADC1_Continues; /*ADC连续转换的DMA配置句柄*/
     for(i=0;i<32;i++)
     {
         if(( 0x0001 << i) &pch->chs)
